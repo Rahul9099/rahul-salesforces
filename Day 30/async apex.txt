@@ -1,0 +1,74 @@
+When to use which one
+
+Future method:-
+1) when we want to perform a task in its own seperate thread 
+eg:- a)avoid mix dml error (performing dml on setup and non-setup object). b) perform callouts.
+c)avoid long running task and cpu timelimit error we can --
+Note:- 10 seconds for synchronous transactions and 60 seconds for asynchronous.
+
+Queueable method:-
+1)chaining of jobs . 2) keep a track of job by id . 3) pass sObject 3) do callouts by adding Database.AllowCallOuts
+
+Batch apex:-
+a) when we are dealing with large amount of data and to perform operations in batches
+b) ayse jobs jisme query result bohot jyada lana hai
+
+schedule apex:-
+to schedule apex class
+
+--------------------------------------------------------------------------
+future method:--
+1) prereuisite:- static ,void, @future , -arguments:-primitives not objects
+2)Asynchronous calls, such as @future or executeBatch, called in a startTest, stopTest block, do not count against your limits for the number of queued jobs.
+3)The maximum number of future method invocations per a 24-hour period is 250,000 or the number of user licenses in your organization multiplied by 200, whichever is greater. This limit is for your entire org and is shared with all asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future methods.(ull Salesforce user licenses or App Subscription user licenses)
+4)Future method jobs queued before a Salesforce service maintenance downtime remain in the queue. After service downtime ends and when system resources become available, the queued future method jobs are executed. If a future method was running when downtime occurred, the future method execution is rolled back and restarted after the service comes back up.
+5) extra parameter (callout=true) to indicate that callouts are allowed.
+6)
+
+
+--------------------------------------------------------------------------
+Queueable Apex:- 
+
+1) implements Queueable , implements Database.AllowCallouts,
+id quid=System.enqueuejob(new qObject());
+pass objects / sObjects ,and primitives ,gives higher time for job execution, query the result through AsyncApexJob (AsyncApexJob jobInfo = [SELECT Status,NumberOfErrors FROM AsyncApexJob WHERE Id=:jobID];),
+2)  System.enqueueJob(queueable, delay) --When you set the delay to 0 (zero), the queueable job is run as quickly as possible. With chained queueable jobs, implement a mechanism to slow down or halt the job if necessary. Without such a fail-safe mechanism in place, you can rapidly reach the daily async Apex limit.
+3) when we want to execute a task in order (chaining)
+
+-------------------------------------------------------------------------
+Batch Apex:-
+1)interface : - implements Database.AllowCallouts, implements Database.stateful , implements Database.Batchable<sObject>
+2)start -execute only (1) cannot call other because bina code execute hue dusre call ho jayege 
+3) return type of start method :- 
+Database.querylocator - governer limit bypass ho jate - 50 mill record a sakte
+ iterable - gov limit intact rehte
+4)finsh - execute one - post processing  
+3)execute - depend on batch size
+4) id bid = Database.executebatch(new batchObj()); to add batch job to queue actual execution start when resource availabel
+system.abortjob(id);
+5) max-batch -2000
+6)max batchjobs in apex flex queue -100  we can control which job execute fist in AFqueue (in setup apexflexqueue) [system.flexqueue.movebefore(jobid,jobid)]
+7) Stateful :- when using stateful only instance variable maintains value not static variable
+
+
+limitations:-
+8)per 24-hour period is 250,000, or the number of user licenses in your org multiplied by 200—whichever is greater. Method executions include executions of the start, execute, and finish methods. This limit is for your entire org and is shared with all asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future methods.
+8)no size is given then 200 ke record ke batch me 
+9)upto 100 callouts 
+Note:- FOR UPDATE to lock record during update is not supported in batch
+
+Best practice:-
+
+
+
+
+---------------------------------------------------------------------------
+Scheduler:-
+1) implements schedulable 
+2) how many jobs can be schedule at one time -100 to view use crontrigger (child) - cronjobdetail(parent) object -to get the count
+3)If there are one or more active scheduled jobs for an Apex class, you can’t update the class or any classes referenced by this class through the Salesforce user interface. However, you can enable deployments to update the class
+4)
+
+
+
+
