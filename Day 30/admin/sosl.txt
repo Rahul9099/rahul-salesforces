@@ -1,0 +1,77 @@
+diff betn sosl - soql
+
+sosl:-
+1)sosl sabhe object me search karenge agar  unme relationship nhe bhe hai tab bhe.
+2)text based search hai
+Queries per one transaction: 20
+Query rows returned per one transaction: 2000
+3)in sosl i just have to know what i want to search irrespective of where i have to search this
+4) find is keyword to search - select in soql
+5)
+
+//---syntax
+in apex
+FIND 'What' IN [what field] Returning [where]
+in query
+FIND {What} IN [what field] Returning [where]
+
+
+IN SearchGroup
+(default behavior is to search all text fields in searchable objects)
+note: -Numeric fields aren’t searchable
+-This clause doesn’t apply to articles, documents, feed comments, feed items, files, products, and solutions. If these objects are specified in the RETURNING clause, the search is not limited to specific fields, and all fields are searched
+eg. - FIND {rahul} In email fields returning contact
+question :
+1) what  is the difference in 
+No search group 	FIND {MyProspect}
+ALL FIELDS 	FIND {MyProspect} IN ALL FIELDS
+
+2)FIND {9325944520} returning contact(phone) , client__c
+3)FIND {rahul} returning account(id,name) , contact(id,firstname)
+in the 3 example we can sepcify in which field along with other field
+
+
+Note :- return type of sosl is list and inside that list of sobject
+eg:- list<list<sObject>> soslist = [Find 'rahul' returning account,contact]
+2)default, only the top 2,000 matched records are returned based on relevancy
+
+
+Note- it tokenizes the text and only fields with datatype - phone,email,text
+
+Part -1 - SOSL Limits on Search Results
+- users with viewAll see full set of result return
+- other users have access according to sercurity model
+- for single object -all records
+- for multiple objects - max-2,000 records
+
+
+
+
+examples:-
+1)FIND {rahul} returning contact(id,lastname,firstname where vip__c = true) , account 
+2) wild cards FIND {Joe Sm*} FIND {Joe Sm?th*}
+3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

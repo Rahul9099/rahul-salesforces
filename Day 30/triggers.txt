@@ -1,0 +1,65 @@
+Mostly asked interview questions :-
+1) only system admin should be able to delete the record
+trigger ContactTrigger on Contact (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
+    if (Trigger.isBefore && Trigger.isDelete) {
+        List<Profile> systemId = [SELECT Id FROM Profile WHERE Name = 'System Administrator'];
+        Set<Id> sidset = new Set<Id>();
+        for (Profile p : systemId) {
+            sidset.add(p.Id);
+        }
+        List<Contact> dellist = new List<Contact>();
+        for (Contact wc : Trigger.old) {
+            if (sidset.contains(UserInfo.getProfileId())) {
+                dellist.add(wc);
+            } else {
+                wc.addError('You cannot delete');
+            }
+        }
+        if (!dellist.isEmpty()) {
+            System.debug('Contacts to be deleted: ' + dellist);
+            delete dellist;
+        }
+    }
+}
+                                            correct one bellow
+trigger ContactTrigger on Contact (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
+    if (Trigger.isBefore && Trigger.isDelete) {
+        List<Profile> systemId = [SELECT Id FROM Profile WHERE Name = 'System Administrator'];
+        Set<Id> sidset = new Set<Id>();
+        for (Profile p : systemId) {
+            sidset.add(p.Id);
+        }
+        List<Contact> dellist = new List<Contact>();
+        for (Contact wc : Trigger.old) {
+            if (!sidset.contains(UserInfo.getProfileId())) {
+                wc.addError('You cannot delete');                
+            } 
+        }
+    }
+}
+
+--alternate 
+--questions::-How to write trigger that Only administrators must be able to delete events and tasks with status = 'Completed' or 'Open'?
+Ans:-
+There's no reason to delete the tasks a second time; they're already on their way to the recycle bin when this trigger executes.
+
+For your main question, you can check the type of WhatId:
+
+taskObj.WhatId != null && taskObj.WhatId.getSObjectType() == Opportunity.SObjectType
+
+Your overall trigger could be written as follows:
+
+trigger NoDeleteOnTask on Task (before delete) {
+    if([Select Profile.Name FROM User WHERE Id = :UserInfo.getUserId()]
+       .Profile.Name != 'System Administrator']) {
+        for(Task record: Trigger.old) {
+            if(record.WhatId != null &&
+               (record.Status == 'Completed' || record.Status == 'Open') &&
+               record.WhatId.getSObjectType() == Opportunity.SObjectType) {
+                record.addError('Only admins can delete a task that is not open or completed for an opportunity.');
+            }
+        }
+    }
+}
+
+
