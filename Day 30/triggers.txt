@@ -1,3 +1,12 @@
+Approach for triggers:--
+1) read the question 3 times
+2) always try to use variables to store values instead of parent child
+3) if not 2 applicable go with parent child
+4) break the parent child go with map and set like sir did
+5) after writing try to dry run 
+
+
+
 Mostly asked interview questions :-
 1) only system admin should be able to delete the record
 trigger ContactTrigger on Contact (before insert, after insert, before update, after update, before delete, after delete, after undelete) {
@@ -61,5 +70,147 @@ trigger NoDeleteOnTask on Task (before delete) {
         }
     }
 }
+
+
+Question No-2 :- create  a roll up summary 
+
+(Pending for now --)
+
+
+                                                                                       *********Trigger sheet  questions************ 
+
+1)When we are trying to insert new record into object. If there is any record existing with 
+same account name it should prevent duplicate record
+Ans:-
+
+if(trigger.isBefore && trigger.isInsert){
+accounthandler.validate(trigger.new);
+}
+
+public static void validate(list<account>aclist){
+set<string>nameset = new set<string>();
+if(!aclist.isEmpty()){
+for(account a:aclist){
+nameset.add(a.name);
+}
+list<account>aclist2=[select id from account where name in: nameset];
+set<string> duplicateset =new set<string>();
+for(account a:aclist2){
+duplicateset .add(a.name);
+}
+for(account a: aclist){
+if(duplicateset.contains(a.name)){
+a.addError('user name already exist');
+}
+}
+
+2) duplicate [email & phone] if exist then add error
+
+
+
+
+
+3): Whenever a new contact is created for account update the corresponding account phone with the new contact phone field.
+Ans:-- 
+  public static void accupdate(list<contact>clist){
+        map<id,contact> cmap = new map<id,contact>();
+        for(contact c: clist){
+            if(c.AccountId!=null && c.Phone!=null){
+                cmap.put(c.AccountId,c);
+            }
+        }
+        list<account>aclist=[select id,name,phone From account where id in: cmap.keyset()];
+        for(account a:aclist){
+            a.Phone = cmap.get(a.id).phone;
+        }
+        update aclist;
+    }
+
+
+4)Whenever we try to update the phone of account record then update the related 
+contact phone number with the new Account phone number before account record is updated.
+When we delete the account record then delete the corresponding contact records.
+Ans::-
+public static void realtedContactPhoneUpdate(list<account>aclist,map<id,account>acmap){
+        map<id,string> acmap2 = new map<id,string>();
+        for(account a:aclist){
+            if(a.Phone!=acmap.get(a.id).phone){
+                acmap2.put(a.id,a.Phone);
+            }
+        }
+        list<contact>clist=[select id,phone,accountId from contact where accountId in:acmap2.keyset()];
+        for(contact c:clist){
+            c.Phone = acmap2.get(c.AccountId);
+        }
+        update clist;
+    }
+
+---recursive trigger flow:-
+theory: - contact trigger::-- jab ek new contact insert hoga tab ek new account bhe insert ho. but account trigger:-- jab ek new account insert ho tab ek new contact bhe insert ho. ayse case m ek trigger dusre trigger ko call krte rahega jab tak Maximum trigger depth exceeded nhe aye
+
+eg:-
+public class Utility {
+
+    public static boolean isTriggerTrue = true;
+}
+------------------------
+contact trigger contrigger (after insert){
+if(trigger.isAfter){
+        if(trigger.isInsert){
+            if(Utility.isTriggerTrue){
+                Utility.isTriggerTrue = false;
+                ContactTriggerHandler.contactRecusion(trigger.new);
+            }
+}
+public static void contactRecusion(list<contact>clist){
+        list<account>alist = new list<account>();
+        for(contact c: clist){
+            account a = new account();
+            a.Name='account ->contact rec';
+            alist.add(a);
+        }
+        insert alist;
+    }
+account trigger acctrigger(after insert){
+if(trigger.isAfter){
+        if(trigger.isInsert){    
+            if(Utility.isTriggerTrue){
+                Utility.isTriggerTrue = false;
+                AccountTriggerHandler.createContactRec(trigger.new);
+            }
+       
+        }
+}
+  public static void createContactRecursion(list<account>aclist){
+        list<contact>clist = new list<contact>();
+        for(account a: aclist){
+            contact c = new contact();
+            c.LastName = 'rec contact 1';
+            c.AccountId = a.Id;
+            clist.add(c);
+        }
+        insert clist;
+    }
+
+Note:--
+1)---jab apn  Static Boolean is an anti-pattern so please DO NOT USE krte hai to yeah sirf 200 records k liye chalega but not for large record eg:- mere org me 400 record hai ur pehle 200 ke liye chala but badme false ho gaya next 200 k liye nhe chalega 
+ 
+2)-- https://www.apexhours.com/trigger-framework-in-salesforce/
+
+3)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
