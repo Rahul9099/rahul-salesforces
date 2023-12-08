@@ -1,0 +1,32 @@
+public with sharing class ContactTriggerHandlerIndusrtyStandard {
+    
+    public static void populateAccountNameOnContact(List<Contact> newContactList){
+        Set<Id> accountIdSet = new Set<Id>();
+        for(Contact con : newContactList){
+            if(con.FirstName == null && con.AccountId != null){
+                accountIdSet.add(con.AccountId);
+            }
+        }
+        
+        if(accountIdSet.size()> 0 && !accountIdSet.isEmpty()){
+            Map<Id,String> accountNameMap = new Map<Id,String>();
+            List<Account> accountList = [SELECT Id,Name 
+                                         FROM Account 
+                                         WHERE Id IN :accountIdSet 
+                                         WITH SECURITY_ENFORCED];
+            
+            if(accountList.size() > 0){
+                for(Account acc : accountList){
+                    accountNameMap.put(acc.Id,acc.Name);
+                }
+                for(Contact con : newContactList){
+                    if(con.FirstName == null 
+                       && con.AccountId != null 
+                       && accountNameMap.containsKey(con.AccountId)){
+                        con.FirstName = accountNameMap.get(con.AccountId);
+                    }
+            	}
+            }
+        }
+    }
+}

@@ -204,10 +204,49 @@ Note:--
 
 
 
+                                                                                       *********Youtube questions************ 
 
+7) Trigger to create a realted contact of account with same phone as account phone if checkbox is check on account
+Ans::-
+if(tigger.isAfter){
+if(trigger.isInsert){
+questionSeven(trigger.new,null);
+}
+if(trigger.isUpdate){
+questionSeven(trigger.new,trigger.oldmap);
+}
+ public static void questionSeven(list<account>aclist,map<id,account>acmap){
+        set<id> acset =new set<id>();
+        list<contact> clist = new list<contact>();
+        if(acmap==null){
+            for(account a:aclist){
+                if(a.Active__c == true){
+                    contact c= new contact();
+                    c.LastName = a.Name;
+                    c.Phone = a.Phone;
+                    c.AccountId=a.id;
+                    clist.add(c);
+                }
+            }  
+        }
+        
+        if(acmap!=null){
+            for(account a:aclist){
+                if(a.Active__c != acmap.get(a.id).Active__c){
+                    if(a.Active__c == true){
+                        contact c= new contact();
+                        c.LastName = a.Name;
+                        c.Phone = a.Phone;
+                        c.AccountId=a.id;
+                        clist.add(c);
+                    }                    
+                }
+            }
+        }        
+    }
 
-
-
+questions 8)Trigger to sum all realted opportunties amount of an account
+Ans:-
 
 
 

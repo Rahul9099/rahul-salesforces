@@ -1,0 +1,36 @@
+what is wrapper :- a class inside only have variable but not methods this class can be used to make custom datastructure as requirement. 
+
+2) There can be two types of wrapper:-
+- outside a class (independent)
+- inside a class(inner class) which can be access by className.innerclassname 
+
+public class WrappHw {
+    
+    public static list<WrappHw.wrapperClass> accountDetails(){
+        list<WrappHw.wrapperClass> wraplist = new list<WrappHw.wrapperClass>();
+        list<Account> acList = [SELECT id, (SELECT id FROM Contacts) FROM Account Limit 10];
+        for(Account a : acList){
+         WrappHw.wrapperClass wrapper = new WrappHw.wrapperClass();
+            wrapper.acid = a.id; 
+            wrapper.cList = a.Contacts;
+            wrapper.conSize = a.Contacts.size();
+            wraplist.add(wrapper);
+        }
+        return wraplist;
+    }
+    public class wrapperClass{
+        public id acid;
+        public list<Contact> cList;
+        public integer conSize;
+    }
+    
+}
+
+list<WrappHw.wrapperClass> w = wrappHw.accountDetails();
+for(WrappHw.wrapperClass c: w){
+  System.debug(c);  
+}
+
+
+
+

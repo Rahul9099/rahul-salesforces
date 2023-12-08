@@ -46,7 +46,7 @@ Database.querylocator - governer limit bypass ho jate - 50 mill record a sakte
 3)execute - depend on batch size
 4) id bid = Database.executebatch(new batchObj()); to add batch job to queue actual execution start when resource availabel
 system.abortjob(id);
-5) max-batch -2000
+5) max-batch -2000 (Database.queryLocator)
 6)max batchjobs in apex flex queue -100  we can control which job execute fist in AFqueue (in setup apexflexqueue) [system.flexqueue.movebefore(jobid,jobid)]
 7) Stateful :- when using stateful only instance variable maintains value not static variable
 
@@ -60,7 +60,13 @@ Note:- FOR UPDATE to lock record during update is not supported in batch
 Best practice:-
 
 
+10)What is Database.BatchableContext?
 
+All the methods in the Database.Batchable interface require a reference to a Database.BatchableContext object. 
+
+This object is used to track the progress of the batch job.
+
+getJobID returns the ID of the AsyncApexJob object associated with this batch job as a string.
 
 ---------------------------------------------------------------------------
 Scheduler:-
@@ -68,6 +74,38 @@ Scheduler:-
 2) how many jobs can be schedule at one time -100 to view use crontrigger (child) - cronjobdetail(parent) object -to get the count
 3)If there are one or more active scheduled jobs for an Apex class, you can’t update the class or any classes referenced by this class through the Salesforce user interface. However, you can enable deployments to update the class
 4)
+
+
+
+>>>>>>>>>>>>>>>>>>>>>>>
+Scenerios :-
+1)we have to process a batch apex with 1000 record with 200 records in each transaction and the last 
+transaction failed while doing the dml . what will happen to processed record?
+Ans:- salesforce me har batch ek seperate transaction hai to ayse case me agar ek batch fail hote hai to use vo single batch pure rollback ho ge.
+but in this case jo pehle ke record hai vo database me save ho jayenge.
+
+2) agar pehle he batch fail ho gaye
+ans:-pehle batch rollback ho jayege Any subsequent batches (records 201-400, 401-600, and so on) will not be processed because the first batch failed.
+
+3) agar bitch me kahe error agaya
+Ans:- pehele ke batch ka data save ho jayega bich me jaha fail hue vo roll-back ur bad ke hone wale batchs execute nhe hoge
+
+4) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
