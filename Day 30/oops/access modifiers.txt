@@ -1,0 +1,6 @@
+
+      No    =  private   <    protected    <  public      <     global 
+       
+    private   only in          can only be    anywhere      used when other
+                  same           access by        in same        org want to acces
+                  class            child class        org               class

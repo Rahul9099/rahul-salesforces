@@ -1,0 +1,41 @@
+capgiminie 
+
+* when a contact is create/updated then update the contact phone 
+   with account phone 
+
+trigger ContactTrigger on Contact (before insert, after insert, before update, after update, before delete, after delete, after undelete){
+    if(Trigger.isBefore){
+        if(trigger.isInsert || trigger.isUpdate){
+            AccountTriggerHandler.contactPhoneUpdate(trigger.new); 
+        }
+    }
+}
+
+public with sharing class  AccountTriggerHandler {
+
+public static void contactPhoneUpdate(list<contact>newContactList){
+       list<Id> accountIdList = new list<Id>();
+        if(!newContactList.isEmpty()){
+            for(contact con: newContactList){
+                if(con.accountId!=null){
+                    accountIdList.add(con.accountId);
+                }
+            } 
+        }
+        list<account> accountUpdateList = [select id,phone FROM Account
+                                                             WHERE Id IN: accountIdList 
+                                                             WITH SECURITY_ENFORCED];
+        map<id,String> AccountPhoneMap = new ap<id,String>();
+       if(!accountUpdateList.isEmpty()){
+          for(account acc : accountUpdateList){
+          AccountPhoneMap.put(acc.Id,acc.Phone);
+          }
+        } 
+        for(contact con : newContactList){
+         if(con.AccountId !=null){
+         con.phone = AccountPhoneMap.get(con.AccountId); 
+      }
+     }
+    
+
+}

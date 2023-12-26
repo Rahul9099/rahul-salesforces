@@ -1,0 +1,46 @@
+str.length
+
+0 based indexing
+-extract a part of string
+1)slice-(start,end)
+let str ="newstringrahul"
+str.slice(4,7) --> return 4till6 ->tri
+let str = 'rahuldange';
+let part = str.slice(-8,-4);
+console.log(part); -->huld
+
+2)substring 
+diff- it doesnot contains negative staring and end 0
+
+3)substr
+diff- depricated
+
+--------replacing string content
+
+1) replace()
+- case senstive hai agar insenitive bana hai to  /word/i
+- only replace first occurence sabhe ko replace krna hai to  /word/g
+
+2) replaceAll()
+- will work as /word/g
+
+
+--------search --- indexOf()  , lastIndexOf(),  includes(),  search() ,match()
+1)let string = 'rahuldange RAHULDANGE'
+let ans = string.indexOf('a',4); ->> normaly first index but in this case after 4 char
+console.log(ans);
+
+2)The Difference Between
+String search() and String indexOf()
+
+The search() cannot take a start position argument.
+
+The indexOf() method cannot search against a regular expression.
+The Difference Between
+String search() and String match()
+
+The search() method returns the position of the first match.
+
+The match() method returns an array of matches.
+
+

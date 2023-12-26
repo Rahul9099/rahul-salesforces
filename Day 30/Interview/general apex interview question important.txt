@@ -1,0 +1,260 @@
+Give an example of Implicit and Explicit Invocation of apex?
+
+Ans:-
+
+    Implicit -> Triggers
+    Explicit -> JavaScript Remoting
+
+4. What is an Abstract Class?
+
+Ans:-Abstract classes in Salesforce Apex are the classes that comprise one dynamic strategy at least. A conjectural technique is an approach that is marked though it contains no use whatsoever.
+
+29. What does Salesforce's JavaScript remoting mean?
+
+Ans:- JavaScript remoting can be used by front-end developers to send an AJAX request from a Visualforce page straight to an Apex controller. By separating the page from the controller and enabling JavaScript remoting, you may carry out operations on the page without having to reload it whole.
+
+35. In a production environment, how can you edit Apex classes?
+
+Ans:- Avoid editing Apex classes directly in production in Salesforce. Instead, create changes in a sandbox, properly test them, then use deployment technologies such as Change Sets or Metadata API to migrate them to production safely. This contributes to stability and lowers the possibility of introducing issues in the live environment.
+
+70. What distinguishes an input field from an input text?
+
+Ans:- Regardless of datatypes, field values should always be displayed as text boxes. Automatically display based on field data types
+71. What distinguishes a data table from a pageblocktable?
+
+Ans:- Pageblocktable is used to display records with the standard Salesforce look and feel, while Datatable is used to display records without it.
+72. How many ways may a record be shared?
+
+Ans:- Role hierarchies, Organisation Wide Defaults (OWD), Manual Sharing, Crietria-based Sharing Rules, and Apex Sharing are some of the sharing options.
+73. What do IsNull and IsBlank mean?
+
+Ans:- IsNull only supports numeric values.
+
+IsBlank supports both numbers and text.
+
+114. What function does "Transfer Record" serve in a profile?
+
+Ans:- If a user just has read access to a particular record but wishes to change the owner name, he can do so by turning on transfer record functionality at the profile level.
+115. How many types of bindings are there?
+
+Ans:- The different categories of bindings are as follows:
+
+    Action Methods in the Controller are referred to as Action Bindings.
+    Data Sets in the Controller are referred to as Data Bindings.
+    Visualforce components are referred to as component bindings.
+
+1. What is a skinny table, and what should a skinny table take into account?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,52 @@
+public virtual class Bicycle {
+
+    public Integer gear;
+    public Integer speed;
+    public string color;
+    public Bicycle (Integer gear,Integer speed){
+        this.gear = gear;
+        this.speed = speed;
+    }
+    
+    public virtual void speedUp(Integer num){
+        speed +=num;
+    }
+    public void speedDown(Integer num){
+        speed -= num;
+    }
+    public virtual void colour(string color){
+        this.color = color;
+        system.debug('inide parent' + this.color);
+    }
+}
+
+
+public class MountainBike extends Bicycle{
+ 
+    public Integer speed;
+    
+    public integer seat;
+    public MountainBike(Integer gear,Integer speed,Integer seat){
+        super(gear,speed);
+        this.seat = seat;
+    }
+    
+    public void color(string color){
+        super.colour(color);
+        system.debug('child method');
+    }
+    
+    public override void speedUp(Integer speed){
+        this.speed = speed;
+        this.speed *= 2;
+    }
+}
+
+
+>> this vs super 
+this is used to access current instance of class and set value variable and method the current 
+this for constructor chaining
+
+super - inhertence only calling virual method or constructor of parent class
+
+>>virtual 

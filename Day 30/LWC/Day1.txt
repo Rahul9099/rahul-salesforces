@@ -1,0 +1,35 @@
+- org browser :- org playstore where we can download the files
+- package.xml > manifest ->> this file is sotre the metadata of org files 
+             <types>
+                   <members> filename <members>
+                   <name>ApexClasses<name>
+             <types>
+just like package.json file 
+
+
+-- HTML vs XML
+config:- it is a config file --> which expose where the component has to be exposed and its properties. 
+
+ must be one of the following:
+ - lightning__AppPage
+ - lightning__HomePage
+ - lightning__RecordPage
+ - lightning__UtilityBar
+ - lightning__FlowScreen
+ - lightning__Tab
+ - lightning__Inbox
+- lightningStatic__Email
+ - lightningCommunity__Page
+ - lightningCommunity__Page_Layout
+ - lightningCommunity__Theme_Layout
+ - lightningCommunity__Default
+ - lightningSnapin__ChatMessage
+ - lightningSnapin__Minimized
+ - lightningSnapin__PreChat
+- lightningSnapin__PreChat
+ - lightningSnapin__ChatHeader
+ - lightning__RecordAction
+ - lightning__GlobalAction
+ - analytics__Dashboard
+ - lightning__PropertyEditor
+                                    

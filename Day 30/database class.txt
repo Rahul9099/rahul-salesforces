@@ -1,0 +1,32 @@
+public class DatabaseClassDemo {
+      /*
+Database.saveResult = insert,updat
+Database.upsertResult = upsert
+Database.mergerResult = merger
+Database.deleteResult = delete
+Database.undeleteResult = undelete
+Database.emptyRecycleBinResult = emptyRecycleBin
+    */
+    list<account> aclist = new list<account>();
+    
+    for(integer i=0;i<10; i++){
+        account a = new account();
+        a.name ='a'+i;
+        aclist.add(a);
+    }
+    aclist.add(new account());
+    Database.saveResult[] savelist = Database.insert(aclist,false) // all or none - false
+        for(Database.saveResult d : savelist){
+            if(d.isSuccess()){
+                system.debug(d.getId());
+            }else{
+                System.debug('error occur');
+                for(Database.error e : d.getError()){
+                    System.debug(e.getMessage());
+                    System.debug(e.getFields());
+                }
+            }
+        }
+
+    
+}

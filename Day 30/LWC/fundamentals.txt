@@ -1,0 +1,14 @@
+wire + foreach loop + ifelse + iterator --> this thing goes hand in hand
+
+event.target.value;
+event.target.label;
+event.target.type;
+
+
+lightning-card
+lightning-combobox
+login page ui
+
+account>opp>lineitem
+account name , opp - jiske lineitmes nahe hai 
+select account.name,amount,stage from opportunity where opportunityid not in () 

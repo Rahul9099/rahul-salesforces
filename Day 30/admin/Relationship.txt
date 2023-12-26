@@ -1,0 +1,18 @@
+junction object
+
+- sid |  gid
+  s-1 | g-1
+  s-2 | g-2
+  s-1 | g-1
+
+-primary relationship - whichever field you create first will become primary relationship and the object become primary master object 
+ - now in m-d realationship the owner field gets deriverd from master object so,in case of junction the owner ship will be derived from primary master object
+ - also the lookin field gets derived from primary master object
+ - in case of security setting it will consider the security setting of both object 
+ e.g:- if you have permission of read on both object then only you can see the data
+
+Note- if master record delete then all the child record will also gets deleted
+
+what happen if we delete the juction object
+-yes we can delete (child) , when we undelete the m-d relation is converted to lookup
+

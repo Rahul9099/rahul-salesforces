@@ -1,0 +1,46 @@
+ in parent - child == only one level
+in child to parent = including child only 5 level means 1child and  4 parent level
+this can be extended like find the middle and 1 child query + 5 child level = 6 object at a time
+
+some illegal things
+ 
+select id,(select id ,(select id from opportunitylineItems)from opportunities)from account // illegal one subquery at a time
+subquery inside subquery is illegal
+
+
+Limits and Limitations
+
+As with most things of Salesforce, SOQL comes with its own set limits. With SOQL queries, these limits can change depending on the context on which you’re running the query, but first, let’s talk about its universal limits:
+
+    100k character limit: the entire query, including all clauses, must be less than 100k characters in length.
+    4000-character limit for strings in the WHERE clause: this is for individual strings, not the WHERE clause as a whole (e.g. a concatenation of Ids).
+    No more than 55 child-to-parent relationships.
+    No more than 5 chained parent-to-child relationships, e.g. “Contact.Account.Owner.Name” is valid with 3 relationships, however “Contact.Account.Parent.Custom_Lookup__r.Owner.Manager.Name” is not, as it traverses 6 relationships.
+    No more than 20 parent-to-child relationships.
+    Parent-to-child relationships can only be performed on the object in the FROM clause, e.g. if querying Accounts, you could return child Contacts, but not child records of those contacts.
+    120 seconds timeout for queries, however the processing of those results can take up to 30 minutes before timing out.
+
+When working with SOQL, you’ll most likely be using it within Apex, which has a few more restrictions around how you can use SOQL:
+
+    Maximum 100 queries in a synchronous transaction
+    Maximum 200 queries in an asynchronous transaction 
+    Maximum 50000 rows returned per transaction
+
+Note: Aggregate queries also count towards this limit, however their usage is calculated differently. Each row returned by the query counts as 1 row, regardless of whether the data has been aggregated from several records.
+
+For example, if the following query returned 7 rows “SELECT COUNT(Id), AccountId FROM Contact GROUP BY AccountId”, it would consume only 7 from this limit, regardless of the number of counted contacts. 
+
+
+ 
+Aggregation  query
+Note:-Queries that use the Aggregate Functions return a list of AggregateResult objects. 
+* You can use Aggregate functions with or without Group by Clause.
+1) should be grouped
+2) always try the result in query editer
+3) eg:-The example Apex Trigger used below is based on the Payment custom object that has a lookup to the Contact and Project objects. Aggregate functions like sum(), max() are used in the query. The sum() is used for the amount field to get the sum of the payment amount made for the project by a contact, max() is to get the last payment date made for the project. The AggregateResult query is used to capture the result of the query and to get the value using an alias name.
+
+solution :-  https://www.mstsolutions.com/technical/soql-aggregate-functions-in-apex/
+
+
+year from date - calander_year()
+eg:-select sum(amount) from opportunity where amount > 10000 AND calendar_year(account.createddate)=2014 group by name

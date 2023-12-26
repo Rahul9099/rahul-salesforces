@@ -1,0 +1,81 @@
+https://www.sfdcamplified.com/advanced-salesforce-flow-interview-questions/
+
+Can you use a Flow to update records related to a record that triggered the Flow?
+
+Yes, you can use a Flow to update records related to the record that triggered the Flow. In fact, updating related records is a common use case for Salesforce Flows.
+
+How do we create a formula field to calculate a 10% discount on the Opportunity Amount in Salesforce?
+
+To create a formula field to calculate a 10% discount on the Opportunity Amount in Salesforce, follow these steps:
+
+    Select the Opportunity Object: In the Object Manager, select the Opportunity object that you want to create the formula field for.
+    Create a New Formula Field: Under the Fields & Relationships section, click on the New button and select Formula.
+    Define the Formula: In the Formula Editor, enter the following formula:
+
+Opportunity.Amount * 0.1
+
+    Name the Field: Give the formula field a name, such as “Discount Amount.”
+    Set the Field Properties: Set the data type to Currency, and specify the decimal places and other properties as per your requirement.
+    Save the Field: Click on the Save button to create the formula field.
+
+After creating the formula field, you can add it to the Opportunity page layout to make it visible to users. The formula field will calculate the 10% discount on the Opportunity Amount and display the discounted amount in the field.
+
+How do we create a formula field to display the age of an Account in days in Salesforce?
+
+To create a formula field to display the age of an Account in days in Salesforce, follow these steps:
+
+    Select the Account Object: In the Object Manager, select the Account object you want to create the formula field for.
+    Create a New Formula Field: Under the Fields & Relationships section, click the New button and select Formula.
+    Define the Formula: In the Formula Editor, enter the following Formula:
+    Name the Field: Give the formula field a name, such as “Account Age in Days.”
+    Set the Field Properties: Set the data type to Number, and specify the Number of decimal places to zero.
+    Save the Field: Click the Save button to create the formula field.
+
+Once you have created the formula field, you can make it visible to users by adding it to the Account page layout. The formula field calculates the Number of days since the Account was created by subtracting the created date from the current date, allowing you to determine the age of the Account.
+
+A sales representative needs to access a custom object in Salesforce, but they are unable to see it in the app. How would you give them access as a Salesforce Admin?
+
+First, verify that the user’s Profile has the necessary CRUD permissions for the custom object. If needed, update their Profile.
+
+Then, ensure that the custom object is included in the app that the sales representative is using, by going to Setup > App Manager > Edit the relevant app > Select the custom object in the ‘Available Items’ section > Add it to the ‘Selected Items’ section > Save the changes.
+
+How can you invoke a Flow from Apex code?
+
+This question tests your knowledge of integrating Salesforce Flow with Apex, showcasing your ability to initiate flows programmatically.
+
+How to answer: Explain the methods available for invoking a Flow from Apex, such as using the `Flow.Interview` class. Provide a concise example demonstrating the code structure for invoking a Flow.
+
+Example Answer: "To invoke a Flow from Apex, I would use the `Flow.Interview` class. I can create an instance of this class, passing in the Flow's unique name and any required input variables. Here's a simple example: Flow.Interview.MyFlowName flow = new Flow.Interview.MyFlowName(new Map{'InputVariable' => 'Value'}); flow.start(); This code initiates the specified Flow and can be extended to handle the output or errors as needed."
+
+ Can you explain the purpose of the 'Fast Lookup' element in Salesforce Flow?
+
+The interviewer wants to gauge your understanding of the 'Fast Lookup' element and its role in optimizing flow performance.
+
+How to answer: Clearly define the purpose of the 'Fast Lookup' element in Salesforce Flow, emphasizing its efficiency in retrieving records without the need for additional queries. Provide a real-world scenario where you would use this element.
+
+Example Answer: "The 'Fast Lookup' element in Salesforce Flow is designed for efficient record retrieval. It allows us to fetch a single record based on specific criteria without the need for an additional query. This is particularly useful when we only need to access a specific record and want to optimize performance. For example, in a Flow where we update a related record, we can use 'Fast Lookup' to quickly retrieve the required information."
+
+How do you handle recursion in Salesforce Flow?
+
+The interviewer wants to assess your awareness of potential challenges, such as recursion, and how you handle such situations in Salesforce Flow.
+
+How to answer: Explain your approach to prevent or manage recursion in Flow, such as using static variables or flags to track the number of iterations. Provide an example to illustrate your strategy.
+
+Example Answer: "Recursion in Salesforce Flow can be managed by using static variables to keep track of the number of iterations. For example, I can use a static variable as a flag to indicate whether the Flow is currently in progress. By checking and updating this variable, I can control the flow's behavior to prevent unintended recursion. This ensures that the flow executes without entering into an infinite loop."
+
+ How do you handle record locking in Salesforce Flow?
+
+The interviewer is interested in your awareness of record locking mechanisms in Flow and your strategies for preventing concurrency issues.
+
+How to answer: Discuss your approach to handling record locking, such as using the 'Record Lock' element in Flow or implementing custom locking mechanisms. Provide an example scenario where this would be crucial.
+
+Example Answer: "In Salesforce Flow, I can use the 'Record Lock' element to explicitly lock records during the flow's execution, preventing other processes from concurrently modifying the same records. Additionally, I may implement custom locking mechanisms using custom fields to signify when a record is being processed. This helps avoid concurrency issues, especially in scenarios where multiple flows or processes could potentially update the same set of records."
+
+23. How can you integrate Salesforce Flow with external systems or services?
+
+The interviewer is interested in your knowledge of integrating Salesforce Flow with external systems, showcasing your ability to create end-to-end automation workflows.
+
+How to answer: Discuss the various methods of integrating Salesforce Flow with external systems, such as using Apex invocable methods, external services, or third-party connectors. Provide an example scenario where integration is crucial.
+
+Example Answer: "Salesforce Flow can be integrated with external systems through various means. I might use Apex invocable methods to call custom Apex logic, utilize external services to connect with RESTful APIs, or leverage third-party connectors for popular services. For instance, in a customer onboarding flow, I could integrate with an external CRM system to automatically create customer records and initiate follow-up processes."
+

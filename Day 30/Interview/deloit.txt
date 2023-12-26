@@ -1,0 +1,24 @@
+1. Intro
+2. Diff types of Relation in Salesforce
+3. Diff btw lookup and master details
+4. How security works in Salesforce.
+5. I have a access to case object from my profile crud. My colleague also have same profile. There is one case where i want help from my colleague then how can i share my record with her.
+6. How i can always share some particular type of case to my colleague.
+7. I have very complex logic to share the record which os not possible with sharing rule then how can i do that
+8. Different events in triggers
+9. How u choose whether u use before or after trigger.
+10. Mixed DML error
+11. Recursion, how to handle, example 
+12. Different sync and Async process in Salesforce
+13. When to use which Async process
+14. How does batch works. In which method what happens
+15. Can i call batch from another batch
+16. If i have to send some data from parent to child how can we do that in LWC
+17. Child to parent
+18. In my component i need third party Javascript. How to do that 
+19. Types of flows 
+20. Different actions performed on record triggered flows. 
+21. I have to create list view button. How can I do that 
+22. What are different types of integration in Salesforce. Difference btw Rest and Soap. 
+23. Explain integration in your project. 
+24. As soon as email is getting in Salesforce a case has been created. We have one field on case called email and the senders email is copied in that email field and now I have to check if there is any contact with the same email in Orgs if yes i have to create a contact and link it with the case other have to create a new contact.

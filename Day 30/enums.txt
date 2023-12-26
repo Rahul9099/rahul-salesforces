@@ -1,0 +1,35 @@
+public class Candidate {
+
+    private String Name;
+    private Integer Age;
+    public enum category { PRIMARY, SECONDARY, DROPOUT }
+    public category CanditateCategory;
+    public Candidate(string Name,integer Age,category CanditateCategory){
+        this.Name =Name;
+        this.Age = Age;
+        this.CanditateCategory =CanditateCategory;
+    }
+    public string getCategory(){
+        return CanditateCategory.name();
+    }
+    
+}
+
+-----------------
+//enums also works same as inner classes/wrapper classes
+list<Candidate.category> cl = Candidate.category.values()
+System.debug(Candidate.category.values());
+System.debug(cl);
+
+Integer val = Candidate.category.SECONDARY.ordinal();
+System.debug(val);
+
+Candidate.category c = Candidate.category.valueof('primary');
+System.debug(String.valueOf(c));
+
+
+candidate rahul = new candidate('rajat',21,candidate.category.PRIMARY);
+Account acc = new Account();
+acc.name ='enum';
+acc.Description = rahul.getCategory();
+insert acc;

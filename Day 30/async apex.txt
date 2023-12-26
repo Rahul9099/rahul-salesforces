@@ -8,6 +8,7 @@ Note:- 10 seconds for synchronous transactions and 60 seconds for asynchronous.
 
 Queueable method:-
 1)chaining of jobs . 2) keep a track of job by id . 3) pass sObject 3) do callouts by adding Database.AllowCallOuts
+finalizer concept in queable
 
 Batch apex:-
 a) when we are dealing with large amount of data and to perform operations in batches
@@ -21,6 +22,7 @@ future method:--
 1) prereuisite:- static ,void, @future , -arguments:-primitives not objects
 2)Asynchronous calls, such as @future or executeBatch, called in a startTest, stopTest block, do not count against your limits for the number of queued jobs.
 3)The maximum number of future method invocations per a 24-hour period is 250,000 or the number of user licenses in your organization multiplied by 200, whichever is greater. This limit is for your entire org and is shared with all asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future methods.(ull Salesforce user licenses or App Subscription user licenses)
+
 4)Future method jobs queued before a Salesforce service maintenance downtime remain in the queue. After service downtime ends and when system resources become available, the queued future method jobs are executed. If a future method was running when downtime occurred, the future method execution is rolled back and restarted after the service comes back up.
 5) extra parameter (callout=true) to indicate that callouts are allowed.
 6)
@@ -93,11 +95,15 @@ Ans:- pehele ke batch ka data save ho jayega bich me jaha fail hue vo roll-back 
 4) 
 
 
-
-
-
-
-
+trigger- contact
+q1
+{
+-user create
+q2= system.enqueJob(new q2());
+q2{
+-comminty user
+}
+}
 
 
 

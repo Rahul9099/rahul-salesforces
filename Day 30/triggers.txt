@@ -248,6 +248,67 @@ questionSeven(trigger.new,trigger.oldmap);
 questions 8)Trigger to sum all realted opportunties amount of an account
 Ans:-
 
+class wrap {
+
+}
+
+public with sharing class OpportunityTriggerHandler {
+
+public static void rollupSumOppToAcc(list<Opportunity> oppNewList){
+
+set<Id>accountIdSet = new set<Id>();
+
+for(Opportunity opp = oppNewList){
+if(opp.AccountId != null){
+accountIdSet.add(opp.AccountId);
+}
+}
+
+list<Opportunity> resultList = [SELECT Id,AccountId,Amount FROM Opportunity 
+                                              WHERE AccountId IN: accountIdSet ORDER BY AccountId
+                                               WITH SECURITY_ENFORCED];
+Map<Id,Opportunity> resultMap = new Map<Id,Opportunity>();
+
+if(!resultList.isEmpty()){
+
+string tempAccountId;
+for(Opportunity opp : resultList){
+  if(tempAccountId == null){
+    tempAccountId = opp.AccountId;
+  }
+  
+}
+
+
+}
+ 
+
+}
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
