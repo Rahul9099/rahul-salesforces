@@ -1,0 +1,16 @@
+ /* 
+   @track person={
+        name:'rahul',
+        age:12
+    }
+    trackHandle(event){
+       this.person.name = event.target.value;
+    }
+    */
+    person={
+        name:'rahul',
+        age:12
+    }
+    trackHandle(event){
+        this.person ={...this.person,name:event.target.value};
+    }

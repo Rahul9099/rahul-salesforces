@@ -1,0 +1,100 @@
+what is lyfcycle hook ?
+- it is a callback method gets triggered at a specific phase in component lyfcycle
+
+3 phases of lyfcycle 
+
+1} mounting:- 
+constructor()
+connectedCallback()
+render()
+renderedCallback()
+
+2} unmounting phase:-
+disconnectedCallback()
+
+3} error:-
+errorCallback()
+
+que:- when we have if:true ,if:false why do we even need a render method?
+
+
+constructor:-
+to check which comp to load data
+call api to see which ui to show
+super() - without super component will not get this of the component
+it is responsible to make object and inintalize the values
+it will call once at first
+e.g :- to check if user is prime then load the components of prime show prime ui
+if user is normal then show the normal component ui
+
+
+
+connected call back:-
+after constructor the object will attack to dom
+to fetch data from server because the html is not loaded it will load after connected callback
+it will run once 
+to call server to take data that will show in ui 
+after connected callback finish the html will load
+
+
+rendered call back:-
+after the complete load of html this will call
+it will execute first then and after the html value gets change then also get called 
+
+disconnectedcallback:-
+this will get called when the componet get remove from the dom
+it also call onece
+e.g:- after submit form if i want to store the data in cache so when user press back he get its value back
+or to submit data to database
+
+errorcallback:-
+if any error is occur during the phase from load to this then it will catch the error
+
+
+eg:- 
+Amazone example
+a user is prime user then show prime products - for that i need to fetch user info from apex in constructor and based on that render the component  - constructor
+befor showing the data to html i need to take data from apex - connected callback - till then show spinner
+after finish of connected callback the html will load and show data -- html load
+just after that need to  popup a sales model on today sales -- rendered callback
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,13 @@
+imperative
+1) when we want to server side operation  data as your require eg on click of button insert user details
+
+2) when we are dealing with salesforce object that doesnot have UI api e.g task and event
+
+3)To call a method from an ES6 module that doesn’t extend LightningElement
+4)code provides a one-time resolution given a set of parameters, whereas @wire(apexMethod) provides a stream of values and supports dynamic parameters.
+5)
+
+
+wire:-
+dont perform dml give to many dml exception
+cacheable= true - data gets stored in cookies

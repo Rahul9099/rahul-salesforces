@@ -1,0 +1,70 @@
+Basic LWC Interview Questions
+
+What is LWC?
+What are the benefits of using LWC?
+What are the key features of LWC?
+How does LWC compare to Aura components?
+What is the LWC lifecycle?
+What are the different types of LWC components?
+What are the different ways to create LWC components?
+What are the different ways to style LWC components?
+What are the different ways to bind data to LWC components?
+What are the different ways to handle events in LWC components?
+Intermediate LWC Interview Questions
+
+What is the difference between a template and a component?
+What are slots and how do you use them in LWC?
+What are trackable properties and how do you use them in LWC?
+What are reactive expressions and how do you use them in LWC?
+What are custom elements and how do you use them in LWC?
+What is the Lightning Data Service and how do you use it in LWC?
+What is the Lightning Locker and how does it work?
+What are best practices for developing LWC components?
+What are some common LWC mistakes to avoid?
+What are some new features in LWC?
+Advanced LWC Interview Questions
+
+What is the difference between a shadow DOM and a regular DOM?
+What is virtual DOM and how does it work in LWC?
+What is state management in LWC and how do you implement it?
+What is internationalization (i18n) and how do you implement it in LWC?
+What is accessibility (a11y) and how do you implement it in LWC?
+What are performance considerations when developing LWC components?
+What are testing best practices for LWC components?
+What are some common LWC performance bottlenecks?
+What are some new features in the Lightning Data Service?
+What are some new features in the Lightning Locker?
+LWC Coding Interview Questions
+
+Write an LWC component that displays a list of contacts.
+Write an LWC component that allows users to create and edit contacts.
+Write an LWC component that allows users to upload and download files.
+Write an LWC component that allows users to filter and sort data.
+Write an LWC component that allows users to interact with a Salesforce chart.
+Write an LWC component that uses the Lightning Data Service to fetch data from Salesforce.
+Write an LWC component that uses the Lightning Locker to protect sensitive data.
+Write an LWC component that is accessible to users with disabilities.
+Write an LWC component that is performant and scalable.
+Write an LWC component that is unit tested.
+Additional LWC Interview Questions
+
+What are some of the challenges of developing LWC components?
+How do you debug LWC components?
+How do you test LWC components?
+How do you deploy LWC components to production?
+What are some of the best resources for learning more about LWC?
+What are some of the ways to improve the performance of LWC components?
+What are some of the ways to make LWC components more accessible?
+What are some of the ways to secure LWC components?
+What are some of the new features that you would like to see in LWC?
+What are some of the ways that you are using LWC in your own Salesforce development?
+Bonus LWC Interview Questions
+
+What is the difference between an LWC template and an LWC component?
+What is the Lightning Web Component Framework?
+What is the Lightning Web Component Compiler?
+What is the Lightning Web Components Tester?
+What is the Lightning Web Component Developer Guide?
+What are some of the benefits of using the Lightning Web Component Lifecycle Hooks?
+What are some of the best practices for using the Lightning Web Component Data Binding API?
+What are some of the best practices for using the Lightning

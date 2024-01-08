@@ -39,3 +39,81 @@ public static void contactPhoneUpdate(list<contact>newContactList){
     
 
 }
+
+
+if contact is created and email is present in lead and account then send an error
+
+triggeron contact (
+
+
+
+public static void addErrorEmail (list<contact>newconlist){
+
+set<string> conEmail = new set<string>();
+for(contact c: newconlist){
+if(c.email != null){
+conEmail.add(c.email);
+}
+}
+
+set<string>emailsInAccount&lead
+list<account> aclist = [select id,email from account where email in: conEmail];
+list<lead> leadlist = [select id,email from lead where email in: conEmail];
+
+for(account a:aclist){
+emailsInAccount&lead.add(a.email);
+}
+for(lead l:leadlist){
+emailsInAccount&lead.add(l.email);
+}
+
+for(contact c: newconlist){
+if(c.email != null){
+  if(emailsInAccount&lead.contains(c.email)){
+     c.addError('it is present');
+}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

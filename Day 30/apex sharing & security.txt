@@ -8,6 +8,13 @@
 
                                                                                                       Important Notes
 
+First, there are at least three different things that need to be access-controlled: Objects (custom or standard), the fields (Custom or standard), and records. There are probably others too, but those should be a good start.
+
+If you want to grant access for the user to do stuff like access a salesforce application, those permissions exist primarily in Profiles and Permission Sets. That gets you into the app, but you won't see any data unless you have permission to that as well. Data, in salesforce, comes from users generating that data.
+
+Since the data that users generate can be automatically made visible to other users, there are access controls for that too. Org-Wide-Defaults and Sharing settings define whether that data that someone generates is Private (that is it falls under the scope of Roles), or it's Public, which has three different access levels, read/write/transfer, read/write, and read-only. If it's set to private (as indicated earlier), Role hierarchies apply. Role hierarchies define who the managers are (for instance) and thus who should automatically see the data that the subordinates create.
+
+Once Profile/Permission sets are configured and the user has logged into the app, there may be particular bits of data you want the user to see and not see. This will be controlled by OWD, Sharing settings, and Roles. Whereas the Roles may govern the access hierarchically between manager and subordinate, the sharing settings/OWD govern the access to the subordinate's data from that subordinate's peers and vise versa. Without this the pages of the application will either show no data, or be completely blank.
 
 
 

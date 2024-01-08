@@ -1,0 +1,36 @@
+
+
+slots - passing html from parent to child to make reuseable component
+
+parent-  in parent inside child comp element should have slot=' ' for condition wheere to show 
+
+
+<templata>
+        <c-child>
+           <p slot='first'>rahul</p>
+          <div slot='footer'> footer </div>
+        <c-child>
+<template>
+
+
+child
+<template>
+     <div>what is your name?</div>
+      <div><slot name='first'></slot></div>
+ <footer class='slds-card__footer slds-hide'>
+ <slot name ='footer'  onslotchange={handleSlotChange}></slot>
+</template>
+
+
+child js:- 
+to remove a css property
+handleSlotChange(){
+const footEle = this.template.querySelector('footer');
+if(footEle){
+footEle.classList.remove('slds-hide');
+}
+}
+
+
+
+

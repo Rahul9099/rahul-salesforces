@@ -1,0 +1,33 @@
+<lightning-card title="REF-create-edit">
+        <lightning-record-edit-form
+        object-api-name={objectApiName}
+        record-id={recordId}
+        density="Config"
+    >
+        <lightning-output-field field-name="Id" value={recordId}></lightning-output-field>
+        <lightning-input-field field-name={nameField}> </lightning-input-field>
+        <div class="slds-var-m-top_medium">
+            <lightning-button variant="brand" type="submit" label="Save">
+            </lightning-button>
+        </div>
+    </lightning-record-edit-form>
+
+import { LightningElement, api } from 'lwc';
+import NAME_FIELD from '@salesforce/schema/Contact.Name';
+import PHONE_FIELD from '@salesforce/schema/Contact.Phone';
+import CONTACTOBJ  from '@salesforce/schema/Contact';
+
+export default class RecordEditForm extends LightningElement {
+     // Expose a field to make it available in the template
+     nameField = NAME_FIELD;
+     phoneField = PHONE_FIELD;
+     
+     // Flexipage provides recordId and objectApiName
+    @api recordId;
+    @api objectApiName;
+    // recordId
+    // handleOnSuccess(event){
+    //  this.recordId = event.detail.id;
+    //  console.log(this.recordId);
+    // }
+}

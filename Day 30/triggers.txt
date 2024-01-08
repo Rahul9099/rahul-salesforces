@@ -245,9 +245,55 @@ questionSeven(trigger.new,trigger.oldmap);
         }        
     }
 
+
+
 questions 8)Trigger to sum all realted opportunties amount of an account
 Ans:-
+public with sharing class TriggerOneFifty {
+// opportunity rollup 
+    public static void OpportunityRollUp(list<Opportunity>opplist,map<id,opportunity>oldmap){
+        //insert ,undelte
+        set<id> accountIdSet = new set<id>(); 
+        if(oldmap==null && !opplist.isEmpty()){
+            for(opportunity opp: opplist){
+                if(opp.accountId!=null){
+                    accountIdSet.add(opp.accountId);
+                }
+            }
+        }
+        if(oldmap!=null && !opplist.isEmpty()){
+            for(opportunity opp: opplist){
+                if(opp.accountId!=null && oldmap.get(opp.id).accountID != opp.accountId){
+                    accountIdSet.add(opp.accountId);
+                    accountIdSet.add(oldmap.get(opp.id).accountID);
+                }
+            }
+        }  
+        list<AggregateResult> result = [select id,accountID,count(id) oppcount,sum(amount) total,
+                                         min(amount) minAmount, max(amount) maxAmount FROM opportunity 
+                                         where accountId in: accountIdSet group by accountId];
+        list<account> accountToUpdateList = new list<account>();
+        for(AggregateResult arg:result){
+            account acc = new account();
+            acc.id =(Id) arg.get(accountID);
+            acc.min__c =(decimal) arg.get(minAmount);
+            acc.max__c = (decimal) arg.get(maxAmount);
+            acc.countOpp__c = (Integer) arg.get(oppcount);
+            acc.total__c = (decimal) arg.get(total);
+            accountToUpdateList.add(acc);      
+        }
+        if(!accountToUpdateList.isEmpty()){
+            update accountToUpdateList;
+        }
+        }
+    }
+}
 
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 class wrap {
 
 }

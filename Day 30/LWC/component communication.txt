@@ -1,0 +1,73 @@
+comunication general types
+1)parent-child
+2)child - parent
+3)child to grand child (bottom to topmost level)(bubble=true)
+3) sibling- sibling (pub-sub)
+4) lwc-lwc
+
+1] parent to child
+a) passing primitive data to child
+assign @api in child 
+if it is in @api handleData then in parent html = <c-child handle-data='data' ><c-child>
+by default if you define property in parent-child componet but not assign value is TRUE
+
+que:- i have made a function and pass the func to child and calling it in child on child button click but it is not updating the original parent value why?
+
+
+
+b) passing non-primitive to child
+
+
+
+
+c) on action on parent pass data to child
+
+
+
+
+d) call child method from parent
+
+
+
+
+
+3] child to grandchild 
+event propogation - passing of event from where it occur till it root 
+Note : - by default in lwc it is
+bubling - bubble:true  means the event will propogate within parents of child component till the root parent 
+when bubble = false means only the immediate parent
+
+composed- (shadow dom) = false - when its false only the immediate parent will listen
+when = true - then the entire shadow dom till the root element will listen
+
+bubbles: true: This indicates that the event should bubble up through the DOM hierarchy. If other elements are listening for events on ancestors of the current element, they will also receive this event.
+
+composed: true: This indicates that the event will cross the shadow boundary. In LWC, a component's template is encapsulated in a shadow DOM, and events do not naturally cross this boundary. By setting composed to true, the event can propagate through the shadow DOM and be seen by elements outside the shadow boundary.
+
+4] pub sub
+- it is way of communicating betn two different compoent
+-first make a service comp(comp which only have js file)
+- 3 things- somebody going to subscribe
+              - somebody going to publish
+              - somebody going to unsubscribe
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

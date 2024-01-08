@@ -12,3 +12,45 @@ login page ui
 account>opp>lineitem
 account name , opp - jiske lineitmes nahe hai 
 select account.name,amount,stage from opportunity where opportunityid not in () 
+
+
+
+Data Binding:- sync betn template(html) & controller (js) 
+-{2+2} -- expressions not allow 
+-{array[0]}--not allow directly
+
+
+javascript interview questions :---
+
+
+1) event bubling
+when an event get fire in child it will propogate to its upmost parent in normal
+to prevent this use event.stopPropogation();
+event.ImmediatePropogation();
+event.preventDefault();
+
+2) event capturing:-
+it will go from parent to child 
+
+3) 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
