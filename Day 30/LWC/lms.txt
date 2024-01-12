@@ -1,0 +1,12 @@
+lwc- lwc
+1) create folder in default
+2) suffix->.messageChannel-meta.xml
+3) masterLabel -> name of channel
+    two fields message to send & my source
+
+deploy to org
+4) add messge channel type to package.xml
+
+5) in lwc to lwc - 
+1) import messaging service i.e messageChannel folder
+2) define scope i.e message context

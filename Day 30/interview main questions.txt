@@ -1,0 +1,17 @@
+1) i want to validate that a contact should have only 5 address
+- create rollup sumarry and validation rule (effective)
+-  trigger on rollup and send validation rule
+
+2)callout = true - the method is now able to invoke external web services
+
+3) what is org:-
+
+sandbox:-
+
+
+types:-
+developer sandbox
+full sandbox
+partial copy sandbox
+developer pro sandbox
+

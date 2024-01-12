@@ -1,0 +1,12 @@
+pub-sub:- 
+componetnt are not in c to p relation but should be in same url / same page then we will use pub-sub
+
+create 2 comp one will publish and other will subscribe
+
+publisher:-
+onclick:- 
+
+
+only subscribe once
+
+interview que:- what are the different import you work on

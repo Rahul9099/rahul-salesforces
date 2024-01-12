@@ -1,0 +1,61 @@
+https://www.udemy.com/course/mastering-lightning-datatable-in-salesforce-lwc/
+
+lightning-datatable
+
+required:- key-field : - identify krne ke liye konse row select kiye and also correct table behaviour.
+case-sensitive must match with data in array
+
+default type:- text
+
+data = arrray
+
+column - konse data dikhana hai object
+{label:' ',fieldName:' ',type:' '}
+
+onrowselection -> konse row select kiye us row k pure info in [array]
+
+The event.detail.selectedRows property contains a list of all selected rows after any checkbox toggle. Alternatively, the event.detail.config.value contains a single id value of the row that was toggled.
+
+
+sorting in lightning web component:-
+
+ sorted-by={sortBy}
+ sorted-direction={sortDirection}
+ onsort={doSorting}
+
+    doSorting(event) {
+        this.sortBy = event.detail.fieldName;
+        this.sortDirection = event.detail.sortDirection;
+        this.sortData(this.sortBy, this.sortDirection);
+    }
+
+    sortData(fieldname, direction) {
+        let parseData = JSON.parse(JSON.stringify(this.data));
+        // Return the value stored in the field
+        let keyValue = (a) => {
+            return a[fieldname];
+        };
+        // cheking reverse direction
+        let isReverse = direction === 'asc' ? 1: -1;
+        // sorting data
+        parseData.sort((x, y) => {
+            x = keyValue(x) ? keyValue(x) : ''; // handling null values
+            y = keyValue(y) ? keyValue(y) : '';
+            // sorting values based on direction
+            return isReverse * ((x > y) - (y > x));
+        });
+        this.data = parseData;
+    }    
+}
+
+----using apex
+ public static List <Contact> getContacts(String field, String sortOrder) {
+        String query;
+        query  = 'SELECT Id, FirstName, LastName, Phone, Email FROM Contact';
+        if(field != null && sortOrder !=null){
+            query += ' ORDER BY '+field+' '+sortOrder;
+        }
+        return Database.query(query);
+    }
+
+infinite Scroll to load more

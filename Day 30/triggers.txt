@@ -340,12 +340,392 @@ for(Opportunity opp : resultList){
 
 
 
+----------------------------------------------------------------------------------------100 trigger target to achive -------------------------------------------------------------------
+41+25=66
+
+yt_SFDC_NIN 41) two object account and opportunity on acc-max closed opp amount 
+scenerio is :- update max closed opp amount  field on account when [opp is (creat,update,delete)] without using aggregate query
+
+my approach:-
+    //dumb ways to die 
+    public static void maxOpprtunity(list<Opportunity>opplist){
+        set<id>accountIdSet = new set<id>();
+        for(opportunity opp :opplist){
+            if(opp.AccountId !=null){
+                accountIdSet.add(opp.AccountId);
+            }
+        }
+       list<account> resultList =[select id,(select id,accountId from opportunities)from account where id in: accountIdSet];
+       list<account> listToUpdate = new list<account>();
+        for(account acc: resultList){
+            decimal max = 0;
+            for(opportunity opp: acc.opportunities){
+                if(opp.Amount > max){
+                    max = opp.Amount;
+                }
+            }
+           acc.max__c =max;
+           listToUpdate.add(acc);
+        }
+        update listToUpdate;
+    }
+ 
+Mistakes:- didnot use map for storing , get confused in data getting retrived , need clear visual data query representation
+
+easy trick:-
+public static void maxOpprtunity(list<Opportunity>opplist){
+        set<id>accountIdSet = new set<id>();
+        for(opportunity opp :opplist){
+            if(opp.AccountId !=null){
+                accountIdSet.add(opp.AccountId);
+            }
+        }
+       list<account> resultList =[select id,(select id,accountId,amount from opportunities order by amount limit 1)from account where id in: accountIdSet];
+       list<account> listToUpdate = new list<account>();
+        for(account acc: resultList){
+            for(opportunity opp: acc.opportunities){
+                 acc.maxAmount__c = opp.amount;
+            }
+           listToUpdate.add(acc);
+        }
+        update listToUpdate;
+    }
+
+
+trigger OpportunityTrigger on Opportunity (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+}
+
+public with sharing class OpportunityTriggerHandler {
+
+}
 
 
 
 
+Scenario 1 : When we are trying to insert new record into object. If there is any record existing with 
+same account name it should prevent duplicate record.
 
 
+trigger AccountTrigger on Account (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isBefore){
+    AccountTriggerHandler.preventDuplicate(trigger.new);
+}
+
+}
+
+public with sharing class AccountTriggerHandler {
+
+  public static void preventDuplicate(list<Account> newAccountList){
+        set<String> nameSet = new set<String>();
+        if(!newAccountList.isEmpty()){
+            for(Account acc : newAccountList){
+                if(acc.name !=null){
+                    nameSet.add(acc.Name);
+                }
+            }
+        }
+        
+         list<Account> resultList = [SELECT Id,Name FROM Account WHERE Name IN: nameSet WITH SECURITY_ENFORCED];
+        set<String> resultSet =new set<String>();
+        if(!resultList.isEmpty()){
+            for(Account acc: resultList){
+                if(acc.name != null){
+                    resultSet.add(acc.Name);
+                }
+            }
+        }
+        if(!newAccountList.isEmpty()){
+            for(Account acc : newAccountList){
+                if(acc.name !=null && resultSet.contains(acc.Name)){
+                    acc.addError('This Account Name is Already Present In Database');
+                }
+            }
+        }
+    }
+
+}
+
+
+Scenario 3: Whenever a new record is created into account object . Before this new record is 
+inserted into Account, delete all the contacts records with this account name.
+
+trigger AccountTrigger on Account (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isAfter){
+    AccountTriggerHandler.deleteContactSameAccountName(trigger.new);
+}
+
+}
+
+public with sharing class AccountTriggerHandler {
+
+ public static void deleteContactSameAccountName(list<Account> newAccountList){
+        set<String> nameSet = new set<String>();
+        if(!newAccountList.isEmpty()){
+            for(Account acc : newAccountList){
+                if(acc.name !=null){
+                    nameSet.add(acc.Name);
+                }
+            }
+        }
+   
+        list<contact> conList = [SELECT Id, Name FROM Contact WHERE Name IN: nameSet WITH SECURITY_ENFORCED];
+        
+       if(!conList.isEmpty()){
+           try{
+            delete conList;
+                }catch(Exception e){
+             System.debug('Exception Occur'+e.getMessage());
+            }
+}
+
+
+Scenario 4: Whenever a new transaction is performed successfully then update the customer object 
+balance field based on 
+If Transaction Type=Deposit, Balance= balance +amount ; withdraw balance= balance-amount;
+Note: Customers and Transaction has lookup Detail Relation.
+
+trigger AccountTrigger on transaction (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isAfter){
+    transactionTriggerHandler.updateCustomerBalance(trigger.new);
+}
+
+}
+
+public with sharing class transactionTriggerHandler {
+
+public static void updateCustomerBalance(list<Transaction> newTransactionList){
+        //step :- 1 update parent wale questions me parentId store karao
+
+        set<Id> customerIdSet = new set<Id>();
+        if(!newTransactionList.isEmpty()){
+            for(Transaction tr : newTransactionList){
+                if(tr.customerID !=null){
+                    newTransactionList.add(tr.cutomerID);
+                }
+            }
+        }
+       //step 2:- create a map of which parent field to update
+
+       map<id,cutomer__c> cutomerMap = new map<id,cutomer__c>([SELECT Id,Balance FROM Cutomer__c WHERE Id IN: customerIdSet WITH SECURITY_ENFORCED]);
+       list<Customer__c> customerUpdateList = new list<Customer__c>();
+       if(!newTransactionList.isEmpty()){
+            for(Transaction tr : newTransactionList){
+                if(tr.customerID !=null && customerMap.containsKey(tr.customerId)){
+
+                   //step 3 list bano ur useme add karo jo update krne hai
+
+                   Customer__c cust = cutomerMap.get(tr.customerId);
+                    if(tr.type == 'Deposite'){
+                        cust.Balance__c = cust.Balance__c + tr.amount;
+                    }
+                    if(tr.type == 'withdraw'){
+                        if(cust.Balance__c >= tr.amount){
+                           cust.Balance__c = cust.Balance__c - tr.amount; 
+                        }
+                    }
+                    else{
+                        
+                    }
+                    customerUpdateList.add(cust);
+                }
+            }
+        }
+        // if bance is 0 and withdraw is negative then
+        if(!customerUpdateList.isEmpty()){
+            update customerUpdateList;
+        }
+}
+
+
+
+Scenario 5: Whenever a new contact is created for account update the corresponding account phone with the new contact phone field.
+
+trigger AccountTrigger on contact (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isAfter){
+    ContactTriggerHandler.updateAccountPhone(trigger.new);
+}
+
+}
+
+public with sharing class ContactTriggerHandler{
+ public static void updateRelatedAccount (list<Contact> newContactList){
+        set<Id> accountIdSet = new set<Id>();
+        set<Id> contactIdSet = new set<Id>();
+        if(!newContactList.isEmpty()){
+            for(Contact con: newContactList){
+                if(con.AccountId != null){
+                    accountIdSet.add(con.AccountId);
+                    contactIdSet.add(con.Id);
+                }
+            }
+        }
+       list<Account> resultAccountList =[SELECT Id,Phone,(SELECT Id,Phone FROM Contacts WHERE Id IN: contactIdSet) FROM Account WHERE Id IN: accountIdSet];
+       list<Account> AccountToUpdate = new list<Account>();
+        if(!resultAccountList.isEmpty()){
+            for(Account acc: resultAccountList){
+                for(contact c:acc.contacts){
+                    acc.phone = c.phone;
+                    AccountToUpdate.add(acc);
+                }
+            }
+        }
+        update AccountToUpdate;
+    }
+}
+
+Notes:- the above thing will work but time complexity O(n(sqr))
+also if two contact will be upload on same account then consider the last one 
+optimize :- update parent on child store parent field to update in map then update
+the below code is optimum approach to solve 
+
+  public static void updateRelatedAccount (list<Contact> newContactList){
+        set<Id> accountIdSet = new set<Id>();
+        if(!newContactList.isEmpty()){
+            for(Contact con: newContactList){
+                if(con.AccountId != null && con.Phone != null){
+                    accountIdSet.add(con.AccountId);
+                }
+            }
+        }
+       map<Id,Account> resultAccountMap = new map<Id,Account>([SELECT Id,Phone From Account WHERE Id IN: accountIdSet ]);
+       list<Account> accountToUpdateList = new list<Account>();
+        for(contact con : newContactList){
+          if(con.AccountId != null && con.Phone != null){
+              if(resultAccountMap.containsKey(con.AccountId)){
+                  Account acc = resultAccountMap.get(con.AccountId);
+                  acc.phone = con.Phone;
+                 accountToUpdateList.add(acc); 
+              }    
+           }  
+        }
+        if(!accountToUpdateList.isEmpty()){
+            update accountToUpdateList; 
+        }
+    }
+
+-------also another way to solve------
+ public static void updateRelatedAccount (list<Contact> newContactList){
+        list<Account> accountToUpdateList = new list<Account>();
+        if(!newContactList.isEmpty()){
+            for(Contact con: newContactList){
+                if(con.AccountId != null && con.Phone != null){
+                    Account acc = new Account();
+                    acc.Id = con.AccountId;
+                    acc.Phone = con.Phone;
+                    accountToUpdateList.add(acc);
+                }
+            }
+        }
+       update accountToUpdateList;
+    }
+
+
+
+
+Scenario 6: Whenever customer record is updated, before updating the record create new record in test object with old values of customer record.
+
+
+trigger AccountTrigger on customer (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isAfter){
+    if(trigger.isUpdate){
+         CustomerTriggerHandler.createBackupInTest(trigger.new);
+   }
+}
+
+public class with sharing CustomerTriggerHandler{
+
+public static void createBackupInTest(list<customer> newCutomerList){
+list<Test> testToUpdateList = new list<Test>();
+if(Customer con: newCutomerList){
+test t = new test();
+t.name = con.name;
+testToUpdateList.add(t);
+}
+}
+update testToUpdateList;
+
+}
+
+
+scenerio :- write a trigger to prevent duplicate in account if same email exist in contact and lead 
+
+trigger AccountTrigger on account (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
+
+if(trigger.isBefore){
+    if(trigger.isInsert){
+         AccountTriggerHandler.preventDuplicate(trigger.new);
+   }
+}
+
+public class with sharing  AccountTriggerHandler{
+
+    public static void preventDuplicateEmail(list<Account> newAccountList){
+        set<String> accountEmailSet = new set<String>();
+        if(!newAccountList.isEmpty()){
+            for(Account acc: newAccountList){
+                if(acc.Email__c !=null){
+                   accountEmailSet.add(acc.Email__c); 
+                }
+            }    
+        }   
+        list<Contact> resultContactList = [SELECT Email FROM Contact WHERE Email IN:accountEmailSet];
+        list<Lead> resultLeadList = [SELECT Email FROM Lead WHERE Email IN:accountEmailSet];
+        set<String> resultEmailSet = new set<String>();
+        if(!resultContactList.isEmpty() || !resultLeadList.isEmpty()){
+            for(Contact c : resultContactList){
+                resultEmailSet.add(c.Email);
+            }
+            for(Lead c : resultLeadList){
+                resultEmailSet.add(c.Email);
+            }
+        }
+       if(!newAccountList.isEmpty()){
+            for(Account acc: newAccountList){
+                if(acc.Email__c !=null && resultEmailSet.contains(acc.Email__c){
+                    acc.addError('Please Enter New Email');
+                }
+            }    
+        } 
+    }
+
+
+17. How would you use a trigger to prevent specific users from deleting certain records?
+
+A Salesforce trigger can be used to prevent specific users from deleting certain records by implementing a ‘before delete’ trigger. This trigger will fire before the deletion of a record, allowing us to check if the user has the necessary permissions.
+
+Here’s an example:
+trigger PreventDelete on ObjectName (before delete) {
+    for(ObjectName record : Trigger.old){
+        if(UserInfo.getUserId() == record.OwnerId && !UserInfo.getProfileId().equals('PROFILE_ID')){
+            record.addError('You do not have permission to delete this record.');
+        }
+    }
+}
+
+In this code, we’re checking each record that is about to be deleted. If the current user is the owner of the record and their profile ID does not match the allowed profile ID, we add an error to the record which prevents it from being deleted. Replace ‘ObjectName’ with the name of your object and ‘PROFILE_ID’ with the ID of the profile you want to allow deletions.
+
+
+24. How would you use a Salesforce Trigger to integrate with an external system?
+
+A Salesforce Trigger can be used to integrate with an external system by creating a trigger on the object that needs integration. When a record is created, updated or deleted, this trigger fires and calls a class method which makes HTTP callouts to the external system’s API.
+
+The Apex code for the trigger would look something like:
+trigger MyTrigger on MyObject (after insert, after update) {
+    ExternalSystemClass.sendToExternalSystem(Trigger.new);
+}
+
+In ExternalSystemClass
+, you’d have a sendToExternalSystem
+method making HTTP callouts. It’s important to remember that since triggers are transactional, we must use asynchronous callouts (@future
+methods) to avoid mixed DML operation errors.
+
+Also, error handling should be implemented in the class method to ensure smooth operation and proper data synchronization between Salesforce and the external system.
 
 
 

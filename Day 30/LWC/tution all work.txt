@@ -1,0 +1,268 @@
+@api - it is public reactive property 
+- expose the proprty / function outside the component
+-special property name recordId accept the recordID of record if put in record page
+-@api function()  --- this.template.querySelector('child-comp').function();
+
+
+@track - it is private reactive property 
+- lwc to know if the value of property is change it === compare the value
+- field contains an object or an array, there’s a limit to the depth of changes that are tracked.
+- now in case of object and array lwc only know the value gets change if we change the refernce of those two or assign new 
+- thats why we use track
+
+
+
+ 1) why array are imitaed as objects
+    :- all the datatypes are derived from objects
+    eg:- let obj={
+        0:'rahul',
+        1:'rajat',
+    }
+    we traverse this as obj[0] and so on  
+
+
+conditional rendering
+<template if:true={}>  <template if:false={}>
+lwc:if={}  , lwc:elseif={}, lwc:else={}
+
+
+looping
+1)using for loop
+-before looping check the value first if not empty
+<template for:each={} for:item="item"></template>
+
+2) using iterator
+<template iterator:iteratorName={array}>
+  -----Here your repeatable template comes-----
+</template>
+
+1. value — The value of the item in the list. Use this property to access the properties of the array. For example -iteratorName.value.propertyName
+
+2. index — The index of the item in the list. For example -iteratorName.index
+
+3. first — A boolean value indicating whether this item is the first item in the list. For example -iteratorName.first
+
+4. last — A boolean value indicating whether this item is the last item in the list. For example -iteratorName.last
+
+Note- The key must be a string or a number, it can't be an object. You can't use the index as a value for the key.
+
+
+
+parent to child
+- define @api in child and pass data from parent
+
+
+child to parent
+- pass custom event to parent
+- 
+handleTemp(){
+  const tp = new CustomEvent('getvalue',{detail:false});
+  this.dispatchEvent(tp);
+}
+
+- as it is event catch the event in <c-child ongetvalue={handleGetValue}>
+-parent js
+handleGetValue(event){
+this.value = event.detail
+}
+
+ passing data from grand parent to parent 
+- this also done by event 
+- using bubble=true,composed = true
+- 
+
+wire :-
+
+What do you mean by  cacheable = true annotations ? 
+Ans: First of all when you mark function as cacheable = true it can only retrieve data i.e. it cant have any DML.
+It is used to improve component performance by quickly showing cached data from client side storage without waiting for server trip. 
+
+ $ prefix tells the wire service to treat values passed as a property of the class and evaluate it as this.propertyName and the  property is reactive. If the property’s value changes, new data is provisioned and the component renders [simple:- $ treat this property as class property and when value change send new data]
+
+
+
+
+@wire
+- apex class @AuraEnabled(cacheable=true) method should return
+- import the method in componet @salesforce/apex/className.methodName
+- import wire
+-@wire(methodName,{Name:'$paramer'}) result
+- result will have two property data/error
+
+-wire as method
+@wire(methodName,{Name:'$paramerter'})
+getResult({data,error}){
+if(data){
+
+}
+if(error){
+
+}
+}
+
+- passing a object as property in wire
+
+https://salesforcecodex.com/salesforce/sending-wrapper-object-to-apex-from-lwc/#:~:text=To%20pass%20this%20AccountWrapper%20wrapper,change%20it%20in%20LWC%20code.
+
+
+public class ApexPassingObject {
+
+    @AuraEnabled
+    public static list<contact> createContactWrapper1(ContactWrapperOne con){
+        
+        system.debug('wrapperText:'+con);
+        list<contact> clist = new list<contact>();
+        if(con != null){
+            contact c = new contact();
+            c.FirstName = con.firstName;
+            c.LastName = con.lastName;
+            c.Phone = con.phone;
+            clist.add(c);
+        }
+        if(!clist.isEmpty()){
+            insert clist;
+        }
+        return clist;
+    }  
+    
+  public class ContactWrapperOne{
+        @AuraEnabled
+      public string firstName{get;set;}
+        @AuraEnabled
+        public string lastName{get;set;}
+        @AuraEnabled
+        public string phone{get;set;}
+    }
+}
+
+
+In js
+
+wire doesnot use to create dml calls
+
+@wire(createContactWrapper1,{con:'$contact'}) result
+
+through imperative
+handle(){
+
+createContactWrapper1({con:this.contact})
+.then(result =>{
+console.log(result);
+})
+.catch(error =>{
+consol.log(error)
+})
+
+
+
+    See the below code and answer the following question: [Scenario based Salesforce Lightning Interview question with relevant answer]
+    If I want to refresh the wired data in the above function, can I call refreshApex(this.someVar) ? 
+
+@wire(getBoats,{boatTypeId : ‘$boatTypeId’})
+getBoats({error,data}){
+if(data){
+this.someVar = data;
+this.error = undefined;
+}
+else if(error){
+this.error = error;
+this.someVar = undefined ;
+}
+}
+
+Ans:
+
+No we cant call refreshApex(this.someVar) rather refreshApex is called on whole result provisioned from the wire service not just the data part, we will have to rewrite it as below : 
+
+@wire(getBoats,{boatTypeId : ‘$boatTypeId’})
+getBoats(result){
+this.mainResult = result;
+if(result.data){
+this.someVar = result.data;
+this.error = undefined;
+}
+else if(result.error){
+this.error = result.error;
+this.someVar = undefined ;
+}
+}
+Now we can refresh data as refreshApex(this.mainResult) 
+
+
+
+
+
+Interview question :- wire vs imperative
+
+
+
+
+
+
+
+component communication - [independent comp - independent comp]
+
+pub - sub
+import {CurrentPageReference} from '@salesforce/navigation';
+
+- two component should be in same page --- i.e url
+- there is a mediator in between pubsub
+- methods:- fireEvent(pageRef,name,data);
+                  registerListner(name,callbackfunction,this);
+callbackFunction(event){
+this.receivedData=event;
+}
+                   unregisterListner(name,callbackfunction,this);
+                   unregisterAll(this);
+
+Note:- subscribe and unsubscribe callback function should be same
+
+
+interview question :-
+interview question - can i do record create ,edit ,view without using apex ?
+yes using lightning-record-form
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------- Etras-----------------------------------
+Are quick actions supported for LWC components ?
+Ans: Quick actions are supported by LWC in Summer 21 or later orgs. LWC quick actions are only supported on record pages.
+How can i reference record ID of page in my component which is fired from quick action.
+Ans: There are two types of quick actions in LWC : 
+Screen actions : Normal action which open a modal 
+Headless actions : Which dont have any html file rather just logic written in js ie no modal window will come up 
+In case of screen actions we will be able to get recordID by just defining recordID as public property in the component.
+For headless action you have to define @api invoke method which is auto called and recordID will be set after this function is called.
+
+
+What are web components, Is LWC based on web components ?
+Ans: In simplest language , web components can be explained as it allows you to create and re-use custom components as html tags in a component with their functionality encapsulated from rest of your code.
+Web components has 4 pillars which make it so amazing.
+HTML Template : user defined templates which are rendered until called upon.
+Custom Elements : With this we can embed as components merely as html tags in our template.
+Shadow DOM : With this we can separate DOM of each custom element from each other to make sure nothing from any components leaks into each other.
+HTML Imports : You can import other html documents in another html document for example we can import multiple templates into one component then use render function to display a template.
+Yes LWC is based on web components
+If you look at LWC architecture Salesforce only adds security , LDS and base components rest is based on web components and es 7.
+
+
