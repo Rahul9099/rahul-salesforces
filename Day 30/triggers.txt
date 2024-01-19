@@ -731,7 +731,124 @@ Also, error handling should be implemented in the class method to ensure smooth 
 
 
 
+trigger AccountTrigger on account (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
 
+if(trigger.isAfter){
+    if(trigger.isUpdate){
+         AccountTriggerHandler.updateRelatedContactPhone(trigger.new,trigger.oldmap);
+   }
+}
+
+public class with sharing  AccountTriggerHandler{
+
+
+public static void updateRelatedContactPhone(list<Account> newAccountList,map<id,Account>oldmap){
+        set<Id> accountIdSet = new set<Id>();
+        if(!newAccountList.isEmpty()){
+            for(Account acc : newAccountList){
+                if(acc.Id != null && acc.phone != oldmap.get(acc.Id).phone){
+                   accountIdSet.add(acc.Id); 
+                }
+            }
+        }
+     //  list<Account> aclist = [select Id,phone,(select Id,phone from contacts)from account Where id IN: accountIdSet];
+        list<contact> conlist = new list<contact>();
+        map<ID,Contact> contactMap = new map<Id,contact>([select accountId,phone from contact where accountId IN:accountIdSet]);
+        if(!newAccountList.isEmpty()){
+            for(Account acc : newAccountList){
+                if(acc.Id != null && acc.phone != oldmap.get(acc.Id).phone && contactMap.containsKey(acc.ID)){
+                   contact con = contactMap.get(acc.Id);
+                    con.Phone = acc.Phone;
+                    conlist.add(con);
+                }
+            }
+        }
+        if(!conlist.isEmpty()){
+            update conlist;
+        }
+    }
+
+
+
+question No3 :- (parent -child ) 
+
+
+
+
+questions -8 trigger to find sum of all related opportunities amount of an account
+
+
+
+
+
+question 9:- trigger on account when account is updated check all opportunity related to account. -> update opp stage to close lost if an 
+opportunity created date is greater than 30 days from today and stage not euals to close won.
+
+
+
+
+question 10:- prevent a other user from delete account
+
+
+
+question 11:- show error when account should not have more than two contact
+
+
+
+question 12:- case is inserted on account put the latest case num in account field
+Ans:- 
+
+public static void caseNumToAccount(list<Case>newCaseList){
+
+list<Account>acclist = new list<Account>();
+if(!newCaseList.isEmpty()){
+
+for(Case cs: newCaseList.isEmpty){
+if(cs.AccountId != null){
+account acc = new account();
+acc.id = cs.AccountId;
+acc.newCaseNumber = cs.id;
+acclist.add(acc);
+}
+
+if(acclist.isEmpty()){
+update acclist;
+}
+
+}
+
+Approach 1 (List<Account>):
+
+    You are updating a list of Account records at once.
+    If there are multiple cases for the same account, you may end up updating the same account multiple times.
+
+
+so this case also use a map
+
+ public static void updateAccountCaseNumberField(list<Case> newCaseList){
+        set<Id>accountIdSet = new set<Id>();
+        if(!newCaseList.isEmpty()){
+            for(case cs: newCaseList){
+                if(cs.AccountId !=null){
+                    accountIdSet.add(cs.AccountId);
+                }
+            }
+        }
+        map<id,Account> accounToUpdateMap =new map<id,Account>([select id,c__c from account where id In: accountIdSet]);
+        list<Account> acclist = new list<Account>();
+         if(!newCaseList.isEmpty()){
+            for(case cs: newCaseList){
+                if(cs.AccountId !=null && accounToUpdateMap.containsKey(cs.AccountId)){
+                    Account acc = accounToUpdateMap.get(cs.AccountId);
+                    acc.c__c =Decimal.valueOf(cs.id);
+                    acclist.add(acc);
+                }
+            }
+        }
+        if(!acclist.isEmpty()){
+            update acclist;
+        }
+    }
 
 
 

@@ -68,3 +68,198 @@ What is the Lightning Web Component Developer Guide?
 What are some of the benefits of using the Lightning Web Component Lifecycle Hooks?
 What are some of the best practices for using the Lightning Web Component Data Binding API?
 What are some of the best practices for using the Lightning
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------------------Lwc ----------------------------------------------------------------------------------------------
+
+1)  what are decorator ?
+
+-  its  a part of ecmascript 
+- dynamically alter functionality of property / function
+- @api ,@wire , @ track 
+
+-  @track :- private reactive property 
+   - component level scope 
+   - keep track of properties 
+   - in lwc 
+   
+- @api it is public reactive property 
+- scope is component level as will as parent component who child is this component
+- it is use for parent to child communication
+
+-@wire 
+- to only read data from salesforce
+-  method / property decorator as wire called automatically 
+- it return a promise - property return  two properties error / data
+- first the data store in cache wire delegate the contol to lwc engine
+- the data send through wire are immutable 
+- (cacheable =true )     ==> cache the data return if call is made by same parameter it will not make a server call instead return the cahe data
+- we do this when data is static / desnot change frequently 
+- use wire as function to manipulate data
+- 
+
+wrapper example:-
+
+
+ connectedCallback(){
+    const obj={
+    friends:['rahul','rajat'],
+    address:{
+    add1:{
+    plotNo:239,
+    }
+    }  
+ }
+ complex({wt:obj})
+ .then(result=>{
+            console.log(result);
+        })
+        .catch(error=>{
+            console.log(error);
+        })
+
+}
+
+public class ComplexWrapperDemo {
+ @AuraEnabled
+    public static void complex(WrapperWireTwo wt){
+        System.debug(wt);
+        for(string fr:wt.friends){
+            system.debug(fr);
+        }
+        System.debug(wt.address);
+        System.debug(wt.address.add1);
+        System.debug(wt.address.add1.plotNo);
+    }
+    
+   public class WrapperWireTwo {
+    @AuraEnabled
+    public List<String> friends { get; set; }
+
+    @AuraEnabled
+    public AddressWrap address { get; set; }
+    }
+    
+    public class AddressWrap {
+        @AuraEnabled
+        public AddressOneWrapper add1 { get; set; }
+    }
+
+    public class AddressOneWrapper {
+        @AuraEnabled
+        public Integer plotNo { get; set; }
+    }
+  } 
+  
+  
+  
+  pubsub:-
+  when communication between two unrelated component 
+  should be in same page
+  events :- 
+  fireEvent(pageReference,eventName,payload)
+  registeEvent(eventName,this.handleCallback,componentReference(this))
+  unregisterall ( this)
+  unregistera(eventName,samehandleCallback,thisArg)
+  
+  import{CurrentPageReference} from 'lightning/navigation';
+  import{fireEvent,registerListener,unregisterAllListeners,unregisterListener} from 'pubsub';
+  
+  publisher[
+   @wire(CurrentPageReference) pageRef;
+    inputInfo;
+    handleInput(event){
+        this.inputInfo = event.target.value;
+    }
+    publishData(){
+        fireEvent(this.pageRef,'inputValue',this.inputInfo);
+    }
+]
+
+subscriber[
+@wire(CurrentPageReference)pageRef;
+    receivedData;
+    handleSubscribe(){
+        registerListener('inputValue',this.handleInput,this);
+    }
+    handleInput(event){
+        this.receivedData = event;
+    }
+    handleUnsubscribeAll(){
+        unregisterAllListeners(this);
+    }
+    handleUnsubscribe(){
+        unregisterListener('inputValue',this.handleInput,this);
+    }
+]
+
+
+
+custom label :- 
+import {labelName} from '@salesforce/label/c.apiName';
+then make a object of 
+label ={
+labelName
+} 
+use this object in html now
+
+
+toast message:-
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
+
+best practice to make a show toast reuseable function
+showToast(header,suHeader,way){
+let event = new ShowToastEvent({
+            title: header,
+			message: suHeader,
+			varient: way
+	}
+	this.dispatchEvent(event);
+);
+}	
+
+lightning navigation 
+import {NavigationMixin} from 'lightning/navigation';
+
+this[NavigationMixin.Navigate]({
+type: 'standard__objectPage',
+attributes:{
+objectApiName: 'Account',
+actionName:'home',
+},
+});
+
+
+
+What are best practices for developing LWC components:-
+
+Difference between lms and pubsub?
+
+
+What is DOM SHADOW-DOM VIRTUAL-DOM:-
+main dom tree ke andar ek [encapsulated] dom banta hai jispr original dom ka koi effect nhe padta
+use:- 
+agar koi css framework use kare ur same class match kr gaye css framework ke ur apne diye
+

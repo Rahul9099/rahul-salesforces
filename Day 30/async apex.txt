@@ -1,3 +1,7 @@
+what is async apex:- run  a task in seperate thread without the user to face delay of waiting a task to finish
+async offers higher set of governer limits
+
+
 When to use which one
 
 Future method:-
@@ -5,6 +9,9 @@ Future method:-
 eg:- a)avoid mix dml error (performing dml on setup and non-setup object). b) perform callouts.
 c)avoid long running task and cpu timelimit error we can --
 Note:- 10 seconds for synchronous transactions and 60 seconds for asynchronous.
+
+@future
+public static void 
 
 Queueable method:-
 1)chaining of jobs . 2) keep a track of job by id . 3) pass sObject 3) do callouts by adding Database.AllowCallOuts
