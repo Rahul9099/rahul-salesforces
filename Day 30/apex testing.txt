@@ -1,1 +1,332 @@
 system and user mode:-
+
+
+ Interview Questions on Test Class
+1) Why it is necessary to write test class in salesforce?
+
+For the development of robust, error-free code, It is necessary to have some mechanism which ensures whether a particular piece of code is working properly or not and for that Apex supports the creation and execution of unit tests. Unit tests are class methods that verify whether a particular piece of code is working properly. Unit test methods take no arguments, commit no data to the database.
+
+When deploying apex to a production organization unit tests must cover at least 75% of your Apex code. While only 75% coverage is needed to deploy apex class to production we should not bound ourselves to cover 75% only instead make sure that every use case of your application is covered, including positive and negative cases, as well as bulk and single records.
+
+2) What is test.starttest() and test.stoptest()? 
+
+Whatever test we are performing we write the test inside of Test.starttest() and Test.stoptest.
+
+Basically they help to create a fresh set of governing limit.
+
+Each test method can call the start test and stop test only once.
+
+3) What is the use of seeAllData=true ? 
+
+If we are defining a test class with @isTest(SeeAllData=true) then we can access data in test class from the database under all method present in the test class. Under this case annotating a method with @isTest(SeeAllData=false) would be ignored and you can access database data inside this method as well.
+
+Let's understand with an example.
+
+@isTest(SeeAllData=true)
+
+public class testclassexample {
+
+static testmethod void testMethodFirst() {
+
+contact obj = [SELECT Id, Name from contact where name='test' LIMIT 1];
+
+//Accessing contact from database
+
+}
+
+@isTest(SeeAllData=false)
+
+static testmethod void testMethodFirst() {
+
+contact obj1 = [SELECT Id, Name from contact where name='test' LIMIT 1];
+
+//Accessing contact from database although @isTest(SeeAllData=false) is applied for method but it will get ignored as test class is having @isTest(SeeAllData=true).
+
+}
+
+}
+
+4) What is the use of seeAllData=false ? 
+
+@isTest(SeeAllData=false)
+
+If we are defining a test class with @isTest(SeeAllData=false) then we cannot access data in test class from the database under all method present in the test class. Under this case annotating a method with @isTest(SeeAllData=true) would not be ignored and you can access database data inside this method.
+
+Let's understand with an example.
+
+@isTest(SeeAllData=false)
+
+public class testclassexample {
+
+static testmethod void testMethodFirst() {
+
+//You cannot access like this now.
+
+contact obj = [SELECT Id, Name from contact where name='test' LIMIT 1];
+
+//You need to create test data
+
+Contact obj=new contact();
+
+obj.name='test';
+
+insert obj;
+
+}
+
+@isTest(SeeAllData=true)
+
+static testmethod void testMethodFirst() {
+
+contact obj1 = [SELECT Id, Name from contact where name='test' LIMIT 1];
+
+//Accessing contact from database although @isTest(SeeAllData=false) is applied for class but it will get ignored.
+
+}
+
+}
+
+5) What are test class best practices? 
+
+1) We should always considered doing testing with bulk records.
+
+2) We Should test "test cases" for both positive and negative test scenario.
+
+3) Avoid using (SeeAllData=true) in test class because it might happen that the test class pass in sandbox but fails in production if data is not present in production.
+
+4) Avoid using hardcoded id's in  test class.
+
+6) What is the need of @TestSetup?
+
+Every test method is considered a different transaction with its own governor limits and hence initially we use to create test data in every test method but to make this more efficient salesforce has introduced @TestSetUp annotation for test class method. You can write a method in test class with @TestSetUp and create all your common test data in this method. Data created in this method doesn’t need to be created again and again, and by default it is available for all test methods.
+
+The @TestSetup method is executed first in any test class before other methods.
+
+
+7) Let say I have a test class in which I have created a testSetup method in which I am creating a contact record. Let say I have two test method inside my test class which is accessing this contact record. If i access this contact record in testmethod1() and made a update to the contact record from testSetup method and now I am accessing this contact in testmethod2(), so will I get the updated contact record or the original unmodified contact record in testmethod2()?
+
+testMethod2() will  gets access to the original unmodified state of  record, this is because changes are rolled back after each test method finishes execution.
+
+8) If the test class is having access to organization data using @isTest(SeeAllData=true) annotation, will the test class be able to support @testSetup method?
+
+@testSetup method are not supported in this case.
+
+9) How many @testSetup method are supported inside a test class?
+
+One test setup method per test class.
+
+10) Why is @TestVisible annotation used in test class?
+
+Using @TestVisible annotation before variable or methods or inner classes inside apex class allows test class to access them. This annotation does not change the visibility of variable or methods or inner classes if accessed by non-test class.
+
+Apex class:
+
+public class apexClassExample{
+
+@TestVisible private static integer rollNo=1;
+
+}
+
+Test class: 
+
+@isTest
+
+public class apexClassExampleTest{
+
+static testmethod void methodName()
+
+{
+
+    Integer rollNo=apexClassExample.rollNo;
+
+}
+
+
+}
+
+11) What is System.runAs() in test class?
+
+Test class runs in system mode, System.runAs() allow us to run the test in context of current user where user 's record sharing is taken into account. User permission or field level permission are not taken into account.
+
+12) What is the use of test.isrunningtest()? 
+
+Sometimes it may happen that in test class you are not able to satisfy certain condition in apex class so under this case, we can bypass this condition by writing test.isrunningtest() in apex class.
+
+Syntax:
+
+In Apex under condition,
+
+if(a=3 || test.isrunningtest())
+
+{
+
+}
+
+13) How to test callouts using HttpCalloutMock Interfaces?
+
+By default test methods cannot be used to test Callouts, so tests that perform callouts fails. Instead, use mock callouts. 
+
+Testing HTTP Callouts by Implementing the HttpCalloutMock Interfaces.
+
+The class that implements the HttpCalloutMock interface can be either global or public.
+
+You can annotate this class with @isTest since it will be used only in test context. In this way, you can exclude it from your organization’s code size limit of 6 MB.
+
+Sample syntax:
+
+global class TestHttpCalloutMockImpl implements HttpCalloutMock {
+
+    global HTTPResponse respond(HTTPRequest req) {
+
+        // Create a fake response.
+
+        // Set response values.
+
+        // return response.
+
+    }
+
+}
+
+Now, let us understand with an example below,
+
+Apex class doing callout:
+
+public class SampleCalloutApexClass {
+
+    public static HttpResponse getDataFromExternalSystem() {
+
+        HttpRequest req = new HttpRequest();
+
+        req.setEndpoint('https://SomeInstance.com/example/test');
+
+        req.setMethod('GET');
+
+        Http h = new Http();
+
+        HttpResponse res = h.send(req);
+
+        return res;
+
+    }
+
+}
+
+Implementing the HttpCalloutMock Interfaces
+
+@isTest
+
+global class TestMockHttpResponseGeneratorImpl implements HttpCalloutMock {
+
+    global HTTPResponse respond(HTTPRequest req) {
+
+       // Creating a fake response
+
+        HttpResponse res = new HttpResponse();
+
+      // Setting response values
+
+        res.setHeader('Content-Type', 'application/json');
+
+        res.setBody('{"example":"test"}');
+
+        res.setStatusCode(200);
+
+      // return response.
+
+        return res;
+
+    }
+
+}
+
+
+Test Class:
+
+@isTest
+
+private class SampleCalloutApexClassTest{
+
+     @isTest static void testCallout() {
+
+        Test.setMock(HttpCalloutMock.class, new TestMockHttpResponseGeneratorImpl ());
+
+        HttpResponse res = SampleCalloutApexClass.getDataFromExternalSystem();
+
+        String contentType = res.getHeader('Content-Type');
+
+        System.assert(contentType == 'application/json');
+
+        String actualValue = res.getBody();
+
+        String expectedValue = '{"example":"test"}';
+
+        System.assertEquals(actualValue, expectedValue);
+
+        System.assertEquals(200, res.getStatusCode());
+
+    }
+
+}
+
+14) What is testMethod keyword and @IsTest annotation?
+
+Test methods are flagged with the @IsTest annotation in the method definition. Unit test methods must be defined in test classes, that is, classes annotated with @IsTest.
+
+@IsTest
+
+private class SampleTestClass {
+
+   // Methods for testing
+
+   @IsTest static void testMethod1() {
+
+      // code here
+
+   }
+
+   @IsTest static void testMethod2() {
+
+      // code here
+
+   }
+
+}
+
+Earlier we also used to have testMethod keyword which was used to define apex test methods.
+
+@isTest
+
+public class SampleTestClass {
+
+static testMethod void testmethod1() {
+
+// code here
+
+}
+
+}
+
+Note:
+
+The testMethod keyword is now deprecated. Use the @IsTest annotation on classes and methods instead. The @IsTest annotation on methods is equivalent to the testMethod keyword.
+
+
+
+In Salesforce Apex, you can check if a class is being run by a test class using the Test.isRunningTest() method. This method returns true if the code is executing in a test context and false otherwise. Here's an example of how you can use it:
+
+apex
+
+public class MyClass {
+    public static void myMethod() {
+        if(Test.isRunningTest()) {
+            // Code to be executed only during tests
+            System.debug('Running in test context');
+        } else {
+            // Code to be executed in non-test context
+            System.debug('Not running in test context');
+        }
+    }
+}
+
+In the above example, myMethod contains code that checks whether it is being executed in a test context using Test.isRunningTest(). You can use this condition to include or exclude certain logic based on whether the code is running in a test class or not.

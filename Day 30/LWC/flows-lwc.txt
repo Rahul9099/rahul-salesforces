@@ -1,0 +1,37 @@
+public class flow{
+
+public class flowWrapper{
+
+@InvocableVariable public list<Account> acclist ;
+
+}
+
+@InvocableMethod(label="fetchRecordsFlows")
+public  static list<flowWrapper> m1(){
+flowWrapper fw = new flowWrapper();
+list<Account>acclist = [select id,name from account limi10];
+fw.acclist = acclist;
+list<flowWrapper> fwlist =new list<flowWrapper>();
+fwlist.add(fw);
+return fwlist;
+  }
+}
+
+
+step 2:- manually assign variable
+
+step 3:- transaction control:- Always start a new transaction
+
+in flow how to accept value:- 
+Available for input   Available for output
+
+
+accept value from lwc to flow:-  value should be @api valueName 
+should be property tag the name should be same as api valueName
+
+<targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="arrayOfAccount" type="@salesforce/schema/Account[]" role="inputOnly" />
+            <property name="propertyToFlow_lwc" type="Integer" role="outputOnly" />
+        </targetConfig>
+    </targetConfigs>

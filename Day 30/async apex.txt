@@ -44,6 +44,24 @@ pass objects / sObjects ,and primitives ,gives higher time for job execution, qu
 2)  System.enqueueJob(queueable, delay) --When you set the delay to 0 (zero), the queueable job is run as quickly as possible. With chained queueable jobs, implement a mechanism to slow down or halt the job if necessary. Without such a fail-safe mechanism in place, you can rapidly reach the daily async Apex limit.
 3) when we want to execute a task in order (chaining)
 
+public class qobject implements Queueable{
+string name;
+account a
+  qobject(string name,account a){
+       this.name=name;
+       this.a = a
+    }
+  public void execute(QueableContext context){
+     Contact acc=new Contact();
+     acc.name = name;
+     acc.AccountId =a.id;
+     insert acc;
+   //chain 
+    system.enqueuejob(new q1object());
+  }
+}
+id qid =system.enqueuejob(new qobject());
+
 -------------------------------------------------------------------------
 Batch Apex:-
 1)interface : - implements Database.AllowCallouts, implements Database.stateful , implements Database.Batchable<sObject>
@@ -59,6 +77,25 @@ system.abortjob(id);
 6)max batchjobs in apex flex queue -100  we can control which job execute fist in AFqueue (in setup apexflexqueue) [system.flexqueue.movebefore(jobid,jobid)]
 7) Stateful :- when using stateful only instance variable maintains value not static variable
 
+
+public class Batch implements Database.Batchable<sObject>{
+
+public Database.QueryLocator start(Database.BatchableContext bc){
+         return Database.getQueryLocator('select id,Name from account');
+}
+public void execute(Database.BatchableContext bc,list<Account>){
+
+}
+public void finish(Database.BatchableContext){
+
+}
+
+}
+
+ID BID = Database.executeBatch(new Batch(),Size);
+
+Note:- agar query locator se kiye to max batch size = 2000
+           agar iterator se kiye to koi limit nhe
 
 limitations:-
 8)per 24-hour period is 250,000, or the number of user licenses in your org multiplied by 200—whichever is greater. Method executions include executions of the start, execute, and finish methods. This limit is for your entire org and is shared with all asynchronous Apex: Batch Apex, Queueable Apex, scheduled Apex, and future methods.
@@ -114,6 +151,8 @@ q2{
 
 
 
+scenerio : - there is a external system that only accept single callout but you want to retrive a large amount of data
+Ans:- batch apex and batch size is one
 
 
 

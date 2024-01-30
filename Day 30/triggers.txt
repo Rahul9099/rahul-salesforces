@@ -372,24 +372,6 @@ my approach:-
  
 Mistakes:- didnot use map for storing , get confused in data getting retrived , need clear visual data query representation
 
-easy trick:-
-public static void maxOpprtunity(list<Opportunity>opplist){
-        set<id>accountIdSet = new set<id>();
-        for(opportunity opp :opplist){
-            if(opp.AccountId !=null){
-                accountIdSet.add(opp.AccountId);
-            }
-        }
-       list<account> resultList =[select id,(select id,accountId,amount from opportunities order by amount limit 1)from account where id in: accountIdSet];
-       list<account> listToUpdate = new list<account>();
-        for(account acc: resultList){
-            for(opportunity opp: acc.opportunities){
-                 acc.maxAmount__c = opp.amount;
-            }
-           listToUpdate.add(acc);
-        }
-        update listToUpdate;
-    }
 
 
 trigger OpportunityTrigger on Opportunity (before insert,before update,before delete,after undelete,after insert,after update,after delete) {
@@ -856,4 +838,195 @@ so this case also use a map
 
 
 
+most fucked trigger ever:-
+account - contact when contact is created/edited is vip then count the total in respective account
+
+trigger contactTrigger on contact (After Insert ,After update){
+   if(trigger.isAfter){
+      if(trigger.isInsert){
+	     ContactTriggerHandler.countOfIsVip(trigger.new,null);
+	}
+	 if(trigger.isUpdate){
+	  ContactTriggerHandler.countOfIsVip(trigger.new,trigger.oldmap);
+     }
+}
+
+public with sharing class ContactTriggerHandler{
+
+public static void countOfIsVip(list<Contact> newContactList,map<id,Contact>oldmap){
+
+set<Id>AccountIdSet = new set<Id>();
+if(oldmap==null &&!newContactList.isEmpty()){
+ for(contact con: newContactList){
+    if(con.AccountId !=null && con.isVip == true){
+	AccountIdSet.add(con.AccountId);
+	}
+}
+
+if(oldmap!=null && !newContactList.isEmpty()){
+ for(contact con: newContactList){
+    if(con.AccountId !=null && oldmap.get(con.id).isVip==false && con.isVip == true){
+	AccountIdSet.add(con.AccountId);
+	}
+}
+
+list<account > acclist = [select id,countOfVip,(select id from contacts where isVip == true) from account where id IN: AccountIdSet with security_enforced];
+for(account acc: acclist){
+    acc.countOfVip = acc.contacts.size();
+	}
+if(acclist.isEmpty()){
+update acclist;
+}
+
+// improved version 
+list<AggregateResult> clist = [select accountId, count(id) total from contact where isVip == true && accountId IN: AccountIdSet  group by accountId];
+list<account> accountToUpdate = new list<account>();
+for( AggregateResult arg : clist){
+ account acc: new account();
+ acc.id = (Id) arg.get(accountId);
+ acc.countOfIsVip = (Integer) arg.get(total);
+accountToUpdate.add(acc);
+}
+if(!accountToUpdate.isEmpty()){
+update accountToUpdate;
+}
+}
+
+
+
+
+Question No :- 42 :- 
+
+trigger accountTrigger on account(before update){
+
+if(trigger.isBefore){
+if(trigger.isUpdate){
+    AccountTriggerHandler.preventDeactivation(trigger.new,trigger.oldmap);
+}
+}
+
+public with sharing class AccountTriggerHandler{
+
+public static void preventDeactivation(list<account> newAccountList,map<id,account>oldmap){
+
+set<id>AccountIdSet = new set<id>();
+if(!newAccountList.isEmpty()){
+for(account acc: newAccountList){
+AccountId.add(acc.id);
+}
+}
+map<id,integer> contactMap = new map<id,integer> ();
+
+list<AggregateResult> arglist =[select id,AccountId,count(id) total from contact where isActive = 'true' && AccountId IN: AccountIdSet group by AccountId];
+
+for(AggregateResult arg : arglist){
+id  accid= arg.get(AccountId);
+Integer  count = (integer) arg.get(total);
+contactMap.put( accid, count);
+}
+
+if(!newAccountList.isEmpty() && oldmap != null){
+for(account acc: newAccountList){
+if( oldmap.get(acc.id).inActive != acc.inActive   && acc.inActive == 'true'  ){
+ if(contactMap.get(acc.id) > 0){
+ acc.addError('you have a active contact please work on it');
+}
+}
+
+
+question 41:- show the max opportunity amount on associated object without using aggregate query
+
+trigger opportunityTrigger on opportunity (After insert , after update, after delete, after undelete){
+
+if(Trigger.isAfter){
+  
+
+}
+}
+
+public with sharing class OpportunityTriggerHandler {
+
+public static void rollupMaxOpportunity(list<Opportunity> newOpportunityList , map<id,Opportuntiy> oldmap){
+
+set<Id> accountIdSet = new set<id>();
+
+// insert , undelete
+if(!newOpportunityList.isEmpty()){
+for(opportunity opp : newOpportunityList){
+if(opp.amount!=null && opp.AccountId !=null){
+accountIdSet.add(opp.AccountId);
+}
+}
+
+list<Opportunity> opplist =[select id,accountId, amount from opportunity where id: accountIdSet];
+map<AccountId,Decimal> accountMaptoUpdate = new map<AccountId,Decimal> ();
+
+
+for(opportunity opp : opplist){
+if(accountMaptoUpdate.containsKey(opp.AccountId) && accountMaptoUpdate..get(opp.AccountId) < opp.amount){
+accountMaptoUpdate.put(opp.AccountId, opp.amount);
+}else{
+accountMaptoUpdate.put(opp.AccountId, opp.amount);
+}
+}
+
+list<Account > accountToUpdate = new list<Account>();
+for(account acc: accountMaptoUpdate.keyset()){
+account ac = new account();
+ac.id = acc.id;
+ac.maxOpprtunity__c = accountMaptoUpdate.get(ac.id);
+accountToUpdate.add(ac);
+}
+if
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Five Standard Object Junction In Salesforce
+
+1.OpportunityLineItem -> OpportunityId + PricebookEntryId
+
+2.PricebookEntry -> PricebookId + Product2Id
+
+3.CaseSolution -> CaseId  + SolutionId
+
+4.OpportunityContactRole -> OpportunityId + ContactId
+
+5.CaseArticle
+
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
+
+import HomePageLabel from '@salesforce/label/c.HomePageNewsLabel';
+
+import { NavigationMixin } from 'lightning/navigation';
+ this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'Account',
+                actionName: 'home',
+            },
+        });
+import Login_image from '@salesforce/resourceUrl/Login_image'
 

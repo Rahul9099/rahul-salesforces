@@ -1,3 +1,77 @@
+== / ===
+let object ={
+Name:roshan
+age:26
+}
+object.age = 27;
+arrays / objects
+objects will be play around 
+lwc concept lifecycle hook explain with example
+share your screen and make a lwc+ flow
+different import statements then there will be questions on what ever to say
+what does an apex class return - promise
+custom label , static resource in image , import react
+refresh apex(imp) :- (wire) service the data store in cache and apex same parameter it will fetch from cache but datahas be updated in org so to refresh how to use this  dont consider it from cache use org
+
+interviewer ko ghumana hai
+
+where have you use lds in record page details section its fetch the record id from flexi page  use case of freshers
+
+code :- trigger + lwc
+major focus :- 70% on theory + 30% coding
+
+
+how to call flow in lwc?
+difference 
+wire is tightly coupled 
+it take care of complete lyf of data
+
+cacheable= true :- readonly it will only return data no manipulation
+
+
+
+imperative:-
+
+
+
+constructor:- wire(pending):- connected callback(data leke ata):-data will reflect in wire from pending to accepted
+
+
+datatabel:- show hide in checkbox ,pagination, sort
+
+metadata , custom settings, report and dashboard,
+
+
+async + test class (theory)  :- test class for callout(integration) mock callcout in test class 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+https://salesforcediaries.com/2020/11/16/get-selected-record-id-from-custom-iteration-in-lightning-web-component/
+
+
 Basic LWC Interview Questions
 
 What is LWC?
@@ -136,7 +210,7 @@ wrapper example:-
  .then(result=>{
             console.log(result);
         })
-        .catch(error=>{
+ .catch(error=>{
             console.log(error);
         })
 

@@ -1,0 +1,48 @@
+ navigateToObjectHome() {
+        // Navigate to the Account home page
+        this[NavigationMixin.Navigate]({
+            type: 'standard__objectPage',
+            attributes: {
+                objectApiName: 'Account',
+                actionName: 'home',
+            },
+        });
+
+-- navigate to record page
+this[NavigationMixin.Navigate]({
+      type: "standard__recordPage",
+      attributes: {
+        objectApiName: "Account",
+        actionName: "view",          //edit 
+        recordId: "$recordId"
+      }
+    });
+
+
+
+
+ this[NavigationMixin.Navigate]({
+      type: "standard__webPage",
+      attributes: {
+        url: "https://sunilkhuwal.wordpress.com"
+      }
+});
+
+
+
+
+
+
+
+-- validation 
+
+
+custom label :- 
+import {labelName} from '@salesforce/label/c.apiName';
+then make a object of 
+label ={
+labelName
+} 
+use this object in html now
+
+import Login_image from '@salesforce/resourceUrl/Login_image'
