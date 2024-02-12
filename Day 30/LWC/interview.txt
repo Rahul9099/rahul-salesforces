@@ -110,6 +110,8 @@ What are some new features in the Lightning Data Service?
 What are some new features in the Lightning Locker?
 LWC Coding Interview Questions
 
+
+implement lazy loading in datatable  -https://sfdclesson.com/2023/07/12/boost-performance-lazy-loading-table-in-lightning-web-components/
 Write an LWC component that displays a list of contacts.
 Write an LWC component that allows users to create and edit contacts.
 Write an LWC component that allows users to upload and download files.
@@ -337,3 +339,5 @@ main dom tree ke andar ek [encapsulated] dom banta hai jispr original dom ka koi
 use:- 
 agar koi css framework use kare ur same class match kr gaye css framework ke ur apne diye
 
+
+lightning navigation:---- https://sfwiseguys.wordpress.com/2020/11/15/lwc-navigation/

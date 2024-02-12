@@ -1,1 +1,18 @@
-            
+Table of content 
+Admin 
+what is namespace , enviroment , deployement statergies 
+
+
+admin
+apex , oops 
+tr
+
+
+LWC:- 
+1) realestate project 
+2) learning project 
+3) one with only pubsub
+4) one with only lms
+
+
+JavaScript topics:-

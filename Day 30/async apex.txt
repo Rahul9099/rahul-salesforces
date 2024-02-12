@@ -13,7 +13,7 @@ Note:- 10 seconds for synchronous transactions and 60 seconds for asynchronous.
 @future
 public static void 
 
-Queueable method:-
+Queueable apex:-
 1)chaining of jobs . 2) keep a track of job by id . 3) pass sObject 3) do callouts by adding Database.AllowCallOuts
 finalizer concept in queable
 

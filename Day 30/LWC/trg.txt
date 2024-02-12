@@ -1,0 +1,490 @@
+trigger theory questions:-
+1) best practices for trigger:
+one trigger per object
+should be logic less make handler method 
+avoid dml / soql query inside loop
+try to avoid nested loop map can be used
+avoid hardcoding ids
+enforced sharing in trigger
+use where clause in soql
+trigger should be bulkified
+use @future/ queableclass 
+
+2) how to bulkify a trigger
+
+
+3) when use flow and trigger
+
+4) what is recursion and how to avoid
+
+5) how to make callout from triggers
+
+6) 
+
+
+public static void validateContactPhonePreventDuplicate(list<contact> newContactList){
+        set<String> PhoneSet = new set<String>();
+        if(!newContactList.isEmpty()){
+            for(contact con : newContactList){
+                if(con.phone !=null){
+                    PhoneSet.add(con.phone);
+                }
+            }
+        }
+        list<Account> leadList =[select id,phone from Account where phone In: EmailSet WITH SECURITY_ENFORCED];
+       set<String> AccountSet = new set<string>();
+        if(!leadList.isEmpty()){  
+            for(lead ld: leadList){
+                if(ld.phone !=null){
+                    AccountSet.add(ld.email);
+                }
+            }
+        }
+        if(!newContactList.isEmpty()){
+            for(contact con : newContactList){
+                if(con.phone !=null && AccountSet.contains(con.phone)){
+                    con.addError(system.label.validate_Same_error);
+                }
+            }
+        }
+}
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+one account more than two opp
+
+trigger opportunityTrigger on opportunity(Before Insert,After Insert , Before Update,After update,Before Delete,After Delete,After Undelete){
+if(trigger.isBefore){
+  if(trigger.isInsert){
+     OpportunityTriggerHandler.validateOpportunity(trigger.new);
+  }
+}
+
+public with sharing class OpportunityTriggerHandler{
+
+public static void validateOpportunity(list<Opportunity>newOpportunityList){
+set<Id>AcidSet =new set<Id>();
+if(!newOpportunityList.isEmpty){
+for(Opportunity opp : newOpportunityList){
+if(opp.AccountId !=null){
+AcidSet.add(opp.AccountId);
+}
+}
+
+map<Id,Integer> AccountMap = new map<Id,Integer>();
+list<Account> acclist =[select id,name,(select id from opportunities) 
+                                       where id IN: AcidSet WITH SECURITY_ENFORCED];
+for(account acc: acclist){
+accountMap.put(acc.id,acc.opportunities.size);
+}
+
+if(!newOpportunityList.isEmpty){
+for(Opportunity opp : newOpportunityList){
+if(opp.AccountId !=null && AccountMap.containsKey(opp.AccountId)){
+  if(AccountMap.get(opp.AccountId) > 2){
+        opp.addError(system.label.No_More_Than_Two_Account);
+	 }
+}
+}
+
+public static void validateOpportunity(List<opportunity> newList){
+	Set<Id> accIds = new Set<Id>();
+	    for(opportunity op : newList){
+		    rif(op.AccountId != null){
+			accIds.add(op.AccountId);
+		}
+	}
+	Map<Id, Integer> oppCountMap = new Map<id, Integer>();
+	List<AggregateResult> arList = [SELECT COUNT(Id) oppCount, AccountId 
+	                                FROM Opportunity WHERE AccountId IN accIds Group By AccountId];
+		for(AggregateResult ar : arList){
+			oppCountMap.put((Id)ar.get('AccountId'), (Integer)ar.get('oppCount');
+		}			
+
+        for(Opportunity opp : newList){
+			if(oppCountMap.get(opp.AccountId) >= 2 && opp.AccountId != null){
+				opp.addError('Cannot insert more than two opportunity');
+			}
+		}	
+}
+
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+trigger ContactTrigger on Contact Before Insert,After Insert , Before Update,After update,Before Delete,After Delete,After Undelete){
+   if(trigger.isBefore){
+       if(trigger.isInsert){
+	         ContactTriggerHandler.countOfOpportunity(trigger.new); 
+		}
+		if(trigger.isUpdate){
+		ContactTriggerHandler.countOfOpportunity(trigger.new); 
+		}
+	}
+}
+
+public with sharing class ContactTriggerHandler{
+
+public static void countOfOpportunity(list<Contact>newContactList){
+set<Id>AccountIdSet = new set<Id>();
+if(!newContactList.isEmpty()){
+for(Contact con: newContactList){
+     if(con.AccountId!=null){
+	    AccountIdSet.add(con.AccountId);
+	 }
+}
+}
+map<Id,Integer> opportunityNumberMap = new map<Id, Integer>();
+for(AggregateResult arg : [SELECT AccountId , count(id) oppcount from Opportunity where AccountId IN: AccountIdSet Group by AccountId]){
+	 opportunityNumberMap.put((Id)arg.get('AccountId') ,(Integer) arg.get('oppCount'));
+}
+	
+if(!newContactList.isEmpty()){
+for(Contact con: newContactList){
+     if(con.AccountId!=null,opportunityNumberMap.containsKey(con.AccountId)){
+             con.No_Of_Opportuntiy = opportunityNumberMap.get(con.AccountId);	    
+	 }
+}
+}
+
+-----------------------------------------------------------------------------------
+trigger OpportunityTrigger on Opportunity Before Insert,After Insert , Before Update,After update,Before Delete,After Delete,After Undelete){
+  if(trigger.isAfter){
+    if(trigger.isInsert){
+	  OpportunityTriggerHandler.populateCount(trigger.new);
+	  }
+      if(trigger.isDelete){
+	  OpportunityTriggerHandler.populateCount(trigger.old);
+	  }
+	}	
+}
+
+public with sharing class OpportunityTriggerHandler{
+
+public static void populateCount(list<Opportunity> oldOpportunityList){
+set<Id> AccountIdSet = new set<Id>();
+if(!oldOpportunityList.isEmpty()){
+for(Opportunity opp: oldOpportunityList){
+    if(opp.AccountId!=null){
+	   AccountIdSet.add(opp.AccountId);
+	   }
+}
+}
+map<Id,Integer> opportunityNumberMap = new map<Id, Integer>();
+for(AggregateResult arg : [SELECT AccountId , count(id) oppcount from Opportunity where AccountId IN: AccountIdSet Group by AccountId]){
+	 opportunityNumberMap.put(arg.get('AccountId') , arg.get('oppCount'));
+}
+/******* this is where you get wrong
+list<Account> acclist = [select id,(select id,no_of_opportunity from contacts) from account where id In: AccountIdSet];
+list<Contact> contactListToUpdate = new list<Contact>();
+for( account acc: acclist){
+ for(contact con : acc.contacts){
+     con.no_of_opportunity = opportunityNumberMap.get(acc.id);
+	 contactListToUpdate.add(con);
+}
+}
+**********/
+list<contact> conlist =[select id,AccountId from contact where AccountId In: AccountIdSet];
+ for(contact con : acc.contacts){
+     con.no_of_opportunity = opportunityNumberMap.get(acc.id);
+	 contactListToUpdate.add(con);
+}
+if(!contactListToUpdate.isEmpty()){
+update contactListToUpdate;
+}
+
+}
+
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+trigger opportunityTrigger on Opportunity(Before Update,After Update){
+
+if(trigger.isAfter){
+    if(trigger.isUpdate){
+	    OpportunityTriggerHandler.isVipOnAccount(trigger.new,trigger.oldmap);
+	}
+}
+}
+
+public with sharing class OpportunityTriggerHandler{
+
+public static void isVipOnAccount(list<Opportunity> newOpportunityList, map<Id,Opportunity>oldmap){
+set<Id> AccountIdSet = new set<Id>();
+set<Id> AccountIdSet2 = new set<Id>();
+if(!newOpportunityList.isEmpty()){
+for(opportunity opp : newOpportunityList){
+if(opp.status == 'close-won' && oldmap.get(opp.id).status == 'close-lost' && opp.AccountId!=null){
+  AccountIdSet.add(opp.AccountId);
+}
+if(opp.status == 'close-lost' && oldmap.get(opp.id).status == 'close-won' && opp.AccountId!=null){
+  AccountIdSet2.add(opp.AccountId);
+}
+}
+
+list<Account> acclistToUpdate = new list<Account>();
+
+
+for(Account acc: [select id,isVip from Account where id In:AccountIdSet ]){
+acc.isVip = true;
+acclistToUpdate.add(acc);
+}
+for(Account acc: [select id,isVip from Account where id In:AccountIdSet2]){
+acc.isVip = false;
+acclistToUpdate.add(acc);
+}
+if(!acclistToUpdate.isEmpty()){
+update acclistToUpdate;
+}
+}
+
+ 
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ 
+ contact- vip field 
+
+ account -check -no
+ 
+ trigger contactTrigger on contact (Before Insert,After Insert , Before Update,After update,Before Delete,After Delete,After Undelete){
+ if(trigger.isAfter){
+   if(trigger.isInsert){
+    contactTriggerHandler.countOfIsVip(trigger.new);
+	}
+	if(trigger.isUpdate){
+	contactTriggerHandler.countOfIsVip(trigger.new,trigger.oldmap);
+    }
+	if(trigger.isDelete){
+	contactTriggerHandler.countOfIsVip(trigger.oldmap);
+	}
+	if(trigger.isUndelte){
+	contactTriggerHandler.countOfIsVip(trigger.new);
+	}
+}
+
+ 
+ 
+ 
+ public with sharing class contactTriggerHandler{
+ 
+ public static void countOfIsVip(list<Contact> newContactList, map<id,contact>oldmap){
+ set<id> accountIdset = new set<id>();
+ //insert
+ if( oldmap == null &&!newContactList.isEmpty()){
+ for(Contact con : newContactList){
+ if(con.AccountId != null && con.isVip =true){
+ accountIdset.add(con.AccountId);
+ }
+ }
+ //update
+ if( oldamap != null && !newContactList.isEmpty() ){
+ for(Contact con : newContactList){
+ if(con.AccountId != null &&con.AccountId!=oldmap.get(con.id).AccountId && con.isVip =true){
+ accountIdset.add(con.AccountId);
+ accountIdset.add(oldmap.get(con.id).AccountId);
+ }
+ }
+ 
+ list<AggregateResult> arglist = [select count(id) ct , AccountId from contact where isVip = 'true' And AccountId In: accountIdset group by accountIdset];
+ list<Account> accountList = new list<Account>();
+ for(AggregateResult arg : arglist){
+ account acc = new account();
+ acc.id = (id) arg.get('AccountId');
+ acc.no_of_isVip = (Integer) arg.get(ct);
+ accountList.add(acc);
+ }
+ if(!accountList.isEmpty()){
+ update accountList;
+ }
+ }
+ 
+ 
+ --------------------rollup when a opportunity and account-----------------------------------------------
+ 
+ trigger OpportunityTrigger on opportunity(Before Insert ,After insert, before update ,){
+  
+  if(trigger is.After){
+    if(trigger.isinsert){
+	           opportunityTriggerHandler.rollupAmount(trigger.new);
+	if(trigger.isUpdate)
+	opportunityTriggerHandler.rollupAmount(trigger.new,trigger.oldmap);
+	
+	if(trigger.isDelete)
+	opportunityTriggerHandler.rollupAmount(trigger.old);
+	
+	if(trigger.isUndelete)
+      opportunityTriggerHandler.rollupAmount(trigger.new);
+	  
+	  
+	  public with sharing class opportunityTriggerHandler{
+	  
+	         public static void rollupAmount(list<Opportunity>newOpportunityList,map<id,Opportunity>oldmapOpp){
+			 //insert ,undelete,delete
+			 set<Id> AccountIdSet =new set<Id>();
+			 if(oldmap==null&&!newOpportunityList.isEmpty()){
+			  for(Opportunity opp: newOpportunityList){
+			      if(opp.Amount!=null && opp.AccountId!=null){
+				      AccountIdSet,add(opp.AccountId);
+					  }
+			    }
+			//update accountID --1111 to accountID - 2222  --need to update both account -1111,2222
+			if(olamap!=null &&!newOpportunityList.isEmpty()){
+			  for(Opportunity opp: newOpportunityList){
+			      if(opp.Amount!=null && opp.AccountId!=null &&olamap.get(opp.id).AccountId!=opp.accountId){
+				      AccountIdSet.add(opp.AccountId);
+					  AccountIdSet.add(olamap.get(opp.id).AccountId);
+					  }
+			    } 
+				
+				
+				map<id,account> accountMap =new map<id,Account>();
+				for(AggregateResult arg: [select AccountId , count(id) cnt , max(amount) mxamt ,min(amount) minamt, sum(amount) totalamt from opportunity
+				                                           WHERE AccountId In: AccountIdSet Group by AccountId WITH SECURITY_ENFORCED])
+					{
+														   
+														  Account acc = new Account();
+														  acc.id = (Id) arg.get('AccountId');
+														  acc.totalOpp = (Integer) arg.get('total');
+														  acc.minOpp = (decimal) arg.get('mxamt');
+														  acc.maxOpp = (decimal) arg.get('minamt');
+														  acc.countOpp = (Integer) arg.get('cnt');
+														  
+														  accountMap.put(arg.get('AccountId'),acc);
+														  
+					}
+					
+					if(!accountMap.isEmpty()){
+					update accountMap.values();
+					
+	}
+	
+---------------------------------------
+count total number of contact for account 
+
+
+--------------trigger scenerio no -46------------------------------------------------------------------------------
+populate account country field on update on account to all its contact
+
+trigger AccountTrigger on Account (After update){
+if(trigger.isAfter){
+   if(trigger.isUpdate){
+       AccountTriggerHandler.populateCountryOnContact(trigger.new,trigger.oldmap);
+	}   
+}	   
+}
+
+public with sharing class AccountTriggerHandler{
+
+public static void populateCountryOnContact(list<Account> newAccountList,map<id,Account> olmapAccount){
+
+map<id,string> accountCoutryMap =new map<id,String>();
+if(!newAccountList.isEmpty()){
+ for(account acc: newAccountList){
+     if( acc.country!=null &&  (olmapAccount==null ||acc.Country !=  oldmapAccount.get(acc.id).country)){
+	     accountCoutryMap.put(acc.id,acc.country);
+		}
+}
+list<contact>contactToUpdate = new list<contact>();
+if(accountCoutryMap !=null){
+
+for(contact con : [select id, accountId,AccountCountry from contact where accountId In: accountCoutryMap.values() WITH SECURITY_ENFORCED]){
+  if(con.AccountId !=null && accountCoutryMap.contains(con.AccountId)){
+    con.AccountCountry = accountCoutryMap.get(con.AccountId);
+	contactToUpdate.add(con);
+	}
+}
+
+}
+
+if(!contactToUpdate.isEmpty()){
+update contactToUpdate;
+}
+
+}
+
+
+--------------trigger scenerio no -46------------------------------------------------------------------------------
+ trigger OpportunityTrigger on opportunity(Before Insert ,After insert, before update ,After update){
+ if(trigger.isAfter){
+   if(trigger.isUpdate){
+      opportunityTriggerHandler.task(trigger.new);
+	  
+	 }
+}
+
+public with sharing class opportunityTriggerHandler{
+
+public static void task (list<opportunity>newOpportunityList, map<id,Opportunity> oldmapOpp){
+ 
+ set<Id> opportunityIdSet =new set<id>();
+ if(!newOpportunityList.isEmpty()){
+   for(opportunity opp:  newOpportunityList){
+      if(opp.stageName !=null && (oldmap==null||oldmapOpp.get(opp.id).stageName!=opp.stageName)){
+	     opportunityIdSet.add(opp.id);
+		}
+	}
+}
+
+map<id,task> taskMap =new map<id,task>();
+for(task tk: [select id,description,whatId from task where whatId In: opportunityIdSet]){
+  taskMap.put(tk.whatId,tk);
+  }
+ list<task> taskToUpdate =new list<task>();
+ if(!newOpportunityList.isEmpty()){
+   for(opportunity opp:  newOpportunityList){
+      if(opp.stageName !=null && (oldmap==null||oldmapOpp.get(opp.id).stageName!=opp.stageName)){
+	     if(taskMap.containsKey(opp.id)){
+		 task tk = taskmap.get(opp.id);
+		 tk.description = opp.stageName;
+		 taskToUpdate.add(tk);
+		 }else{
+		 task tk = new task();
+		 tk.whatId = opp.id;
+		 tk.ownerId = userInfo.getUserId();
+		 tk.subject = 'new task for opportunity'
+		 tk.description =opp.stageName;
+		 taskToUpdate.add(tk);
+		}
+	}
+}
+
+if(!taskToUpdate.isEmpty()){
+upsert taskToUpdate;
+}
+
+--------------trigger scenerio no -24------------------------------------------------------------------------------
+if opportunity get closed make sure the profile is SysAdmin
+
+trigger OpportunityTrigger (before update){
+if(trigger.isBefore())
+     if(trigger.isAfter())
+	    opportunityTriggerHandler.preventUpdat(trigger.new);
+		
+public with sharing class opportunityTriggerHandler(list<opportunity>opplist){
+
+list<Profile> plist = [select id,Name from profile where name = 'System Administrator'];
+set<id> pset = new set<id>();
+for(profile p : plist){
+  pset.add(p.id);
+}
+
+for(opportunity opp : opplist){
+if(  !pset.contains(userInfo.getProfileId()){
+opp.addError('only system admin perform dml');
+}
+}
+
+-----------------------------trigger scenerio no -24------------------------------------------------------------------------------
+trigger opprtunityLineItemtrigger on opprtunityLineItem(after insert)
+ 
+ 
+ 
+ public with sharing class opprtunityLineItemtriggerHandler{
+ 
+ public static void populateProductCount (list<opprtunityLineItem> newlist){
+ 
+ set<id> oppid =new set<id>();
+ 
+ 
+ -----------------
+ opportunitylineItem 
+    inser update
+	opprtunityLineItemtriggerHandler.updateAccount(trigger.new);
+	delete
+	opprtunityLineItemtriggerHandler.updateAccount(trigger.old);
+	

@@ -1,0 +1,5 @@
+https://www.mstsolutions.com/technical/lwc-as-a-quick-actions/
+
+https://www.sfdckid.com/2021/07/how-to-fetch-data-in-lwc-salesforce.html
+
+https://www.youtube.com/watch?v=I0QKIY8fdSw

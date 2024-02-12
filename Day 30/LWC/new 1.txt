@@ -1,0 +1,70 @@
+only specific -----Js interview
+
+let  const :- block scope , canot be recdeclare
+var:- functional scope , can be recdeclare and reinetalize
+hoisting:- in js the memory to variable and function are allocated first then the actual values are been assign 
+eg:- 
+cl(x);----undefined
+fun();-- hello
+
+var x=10;
+fun(){
+cl('hello');
+}
+
+var ?? 'ans' --> if var(null/undefined) then 'ans'
+
+what is promise ?
+object which will give data/failure after some time 
+states:- pending, fullfiled, rejected one promise can only be one thing either sucess or rejected
+
+create a promise:-
+one by js object
+
+let pr =new promise((res,rej)=>{
+settimeout(()=>{res('done')},3000)
+})
+pr.then()
+pr.catch()
+
+
+
+import {LightningElement} from 'lwc';
+import getPersonData from '@salesforce/apex/PracticeWireImpe.'
+export default class demo extends LightningElement{
+
+obj={
+name: 'rahul',
+friends:['rajat','dk'],
+address: {state:'maharashtra'
+                plot:239}
+}
+
+@wire(getPersonData,{o:'$obj'})
+dataFun(data,error){
+ if(data){
+ 
+ }
+if(error){
+
+} 
+
+handleButtonClick(){
+getPersonData({o:this.obj}
+.then((data)=>{
+cl(data);
+})
+.catch((error)=>{
+cl(error);
+})
+-----the above code can be written like this
+async handleButtonClick(){
+try{
+ let data =await getPersonData({o:this.obj})
+ }catch(error){
+  consol.error(error);
+  }
+}
+
+
+}
