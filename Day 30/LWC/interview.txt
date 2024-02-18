@@ -146,6 +146,10 @@ What are some of the best practices for using the Lightning Web Component Data B
 What are some of the best practices for using the Lightning
 
 
+Why wire function gets invoked multiple times?
+What is the importance of Constructor in LWC?
+What are the differences between @api, @wire @track lwc decorators?
+What is the purpose of refreshApex() in LWC? Ex: https://www.salesforcepoint.com/2020/06/lwc-data-table-with-checkbox-example.html
 
 
 
@@ -158,8 +162,9 @@ What are some of the best practices for using the Lightning
 
 
 
+aura :- ECMA 5 and below , conot be used in lwc , slower as much files to load , 
 
-
+lwc:- ecma 6 and above, can be used in aura , faster less files to load , 
 
 
 
@@ -197,6 +202,9 @@ What are some of the best practices for using the Lightning
 - 
 
 wrapper example:-
+
+
+passing any parameter if it comming null then i can stop the calling
 
 
  connectedCallback(){

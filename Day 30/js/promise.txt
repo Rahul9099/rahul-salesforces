@@ -1,0 +1,21 @@
+https://beyondthecloud.dev/blog/promises-in-lwc-lightning-web-components
+
+what is promise :- it is a js object which will give either result/error after sometime 
+
+create one promise?
+const promise = new Promise((rej,res)=>{
+   setTimeOut()=>{
+       resolve('sucess');
+
+},2000);
+});
+
+promise.then((data)=>{
+  consol.log(data)  ---sucess
+})
+.catch((error)=>{
+consol.log(error);
+})
+.finally(
+
+
