@@ -1,0 +1,22 @@
+public virtual class Animal {
+    protected Integer age;
+   public Animal(Integer age){
+        this.age = age;
+    }
+    protected void eat(){
+        system.debug('eat');
+    }
+
+}
+public class Rabit extends Animal{
+    private String name;
+    public Rabit(String name,Integer age){
+        super(age);
+        this.name = name;
+    }
+
+    public void eatRabit(){
+        eat();
+        System.debug(age);
+    }
+}
